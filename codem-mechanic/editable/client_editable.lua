@@ -133,7 +133,7 @@ Config.OpenTrigger = function()
                                 end
                                 if IsControlJustPressed(0, 38) then
                                     if nuiLoaded then
-                                        openMenu('mechanic', mechanic.label)
+                                        TriggerEvent('codem-mechanic:OpenMechanicMenu')
                                     else
                                         TriggerEvent('codem-mechanic:notification', Config.Locales.MENU_LOADING)
                                     end
@@ -226,7 +226,7 @@ Config.OpenTrigger = function()
                             label = mechanic.mechanicMenuLabel,
                             targeticon = 'fas fa-gears',
                             action = function()
-                                openMenu('mechanic', mechanic.label)
+                                TriggerEvent('codem-mechanic:OpenMechanicMenu')
                             end
                         }
                     },
