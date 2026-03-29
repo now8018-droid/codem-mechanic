@@ -147,19 +147,12 @@ nuiCallbackAddEventHandler = AddEventHandler
 
 function openMechanicMenuHandler()
     local jobConfig = Config.MechanicSettings[job]
-    if "no_job" ~= Config.MechanicMode then
-        local nearestMechanic, _, _ = getNearestMechanic()
-        if not CheckCanUseMechanic(nearestMechanic) then
-            goto lbl_22
-        end
-    end
-
     local nearestMechanic = getNearestMechanic()
-    if nearestMechanic then
+
+    if nearestMechanic and (Config.MechanicMode == "no_job" or CheckCanUseMechanic(nearestMechanic)) then
         jobConfig = Config.MechanicSettings[nearestMechanic]
     end
 
-    ::lbl_22::
     if jobConfig then
         openMenu("mechanic", jobConfig.label)
     end
@@ -345,19 +338,20 @@ function handleVehicleMechanicComplete(totalPrice)
     local playerAccount = TriggerCallback("codem-mechanic:getAccount")
     local currentBalance = mechanicVault
 
+    local canCheckJobConfig = true
     if "no_job" ~= Config.MechanicMode then
         local nearestMechanic, _, _ = getNearestMechanic()
         if not CheckCanUseMechanic(nearestMechanic) then
-            goto lbl_29
+            canCheckJobConfig = false
         end
     end
 
-    local jobConfig = Config.MechanicSettings[job]
-    if jobConfig then
-    else
-        currentBalance = playerAccount.cash
+    if canCheckJobConfig then
+        local jobConfig = Config.MechanicSettings[job]
+        if not jobConfig then
+            currentBalance = playerAccount.cash
+        end
     end
-    ::lbl_29::
 
     if Config.ModifyWithYourCash then
         local playerCash = TriggerCallback("codem-mechanic:getPlayerAccount")
