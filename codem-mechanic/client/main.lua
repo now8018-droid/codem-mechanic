@@ -33,6 +33,7 @@ function sendNuiMessage(action, payload)
 end
 
 nuiCallbackNuiMessage = sendNuiMessage
+NuiMessage = sendNuiMessage
 
 nuiCallbackCreateThread = CreateThread
 
