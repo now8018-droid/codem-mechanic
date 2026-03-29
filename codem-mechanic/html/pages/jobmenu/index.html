@@ -1,0 +1,42 @@
+<div class="w-full h-[100vh] flex items-start justify-start relative" style="z-index: 250">
+    <div class="w-[18.5%] flex items-end justify-end h-[45%]">
+        <div class="w-[86%] h-[75%]" style="background-image: url(./images/purple/menu-bg.png); background-size: 100% 100%">
+            <div class="w-full h-[26%] flex items-end justify-center">
+                <div class="w-[95%] h-[95%] flex items-center justify-center">
+                    <!-- <img class="h-[50%]" src="./images/mechaniclogo.png" alt="" /> -->
+                    <div
+                        class="w-[50%] h-[50%] mt-[1.5vh] flex items-center justify-center"
+                        style="background-image: url(./images/purple/mechaniclogo.png); background-size: 100% 100%"
+                    >
+                        <h2 class="text-white mb-[0.8vh]" style="font-family: sf-pro-rounded-bold; font-size: 0.9vw">{{locales.MECHANIC}}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full h-[11%] flex">
+                <div class="w-[30%] h-full flex items-center justify-center">
+                    <h2 style="font-family: sf-pro-rounded-bold; font-size: 0.6vw; color: rgba(255, 255, 255, 0.62)">{{locales.JOB_MENU}}</h2>
+                </div>
+                <div class="w-[70%] h-full flex items-center justify-start">
+                    <div class="w-[92%] h-[4%]" style="background-color: rgba(188, 132, 255, 0.15)"></div>
+                </div>
+            </div>
+            <div class="w-full h-[68%] flex items-start justify-center">
+                <div class="w-[85%] h-[82%] no-scrollbar" style="overflow: auto">
+                    <div
+                        v-for="data in jobMenuCategory"
+                        class="w-full h-[15%] mt-[1vh] flex cursor-pointer hoverjobmenu"
+                        @click="jobMenuOption(data.name)"
+                        style="background-image: url(./images/purple/menuselectbg.png); background-size: 100% 100%"
+                    >
+                        <div class="w-[20%] h-full flex items-center justify-center">
+                            <img class="h-[50%] w-[50%]" style="object-fit: contain" :src="'./images/purple/'+data.name+'.png'" />
+                        </div>
+                        <div class="w-[80%] h-full flex items-center justify-start">
+                            <h2 class="text-white" style="font-family: sf-pro-rounded-bold; font-size: 0.7vw">{{data.label}}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

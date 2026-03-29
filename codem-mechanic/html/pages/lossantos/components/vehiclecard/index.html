@@ -1,0 +1,143 @@
+<div
+    class="w-full h-[92%]"
+    :style="{'background-image': 'url(./images/' + this.$store.state.lossantosPage.currentThema + '/info.png)'}"
+    style="background-size: 100% 100%"
+>
+    <div class="w-full h-[11%] flex items-center justify-start">
+        <h2 style="font-family: sf-pro-rounded-bold; color: white; text-indent: 1vw; font-size: 1vw">{{locales.VEHICLE_SPEC}}</h2>
+    </div>
+    <div class="w-full h-[89%] flex-wrap flex items-start content-start justify-start">
+        <div v-if="this.$store.state.lossantosPage.vehicleCardData" class="w-full flex items-center justify-center h-[16.6%]">
+            <div class="w-[90%] h-full">
+                <div class="w-full h-[40%] flex items-center justify-between">
+                    <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 0.8vw">{{locales.ENGINE}}</h2>
+                    <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 0.8vw">
+                        %{{this.$store.state.lossantosPage.vehicleCardData.engine.toFixed(0)}}
+                    </h2>
+                </div>
+                <div class="w-full h-[60%] flex items-center justify-start">
+                    <div
+                        class="w-full h-[20%]"
+                        style="border-radius: 0.3vw; background: linear-gradient(90deg, rgba(188, 132, 255, 0.32) 0%, rgba(217, 217, 217, 0.32) 100%)"
+                    >
+                        <div
+                            class="h-full transition-all duration-500"
+                            :style="{'width' : this.$store.state.lossantosPage.vehicleCardData.engine + '%' }"
+                            style="border-radius: 0.3vw; background: linear-gradient(90deg, #bc84ff 0%, #88fda2 100%)"
+                        ></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-if="this.$store.state.lossantosPage.vehicleCardData" class="w-full flex items-center justify-center h-[16.6%]">
+            <div class="w-[90%] h-full">
+                <div class="w-full h-[40%] flex items-center justify-between">
+                    <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 0.8vw">{{locales.TRANSMISSION}}</h2>
+                    <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 0.8vw">
+                        %{{this.$store.state.lossantosPage.vehicleCardData.transmission.toFixed(0)}}
+                    </h2>
+                </div>
+                <div class="w-full h-[60%] flex items-center justify-start">
+                    <div
+                        class="w-full h-[20%]"
+                        style="border-radius: 0.3vw; background: linear-gradient(90deg, rgba(188, 132, 255, 0.32) 0%, rgba(217, 217, 217, 0.32) 100%)"
+                    >
+                        <div
+                            class="h-full transition-all duration-500"
+                            :style="{'width' : this.$store.state.lossantosPage.vehicleCardData.transmission + '%' }"
+                            style="border-radius: 0.3vw; background: linear-gradient(90deg, #bc84ff 0%, #88fda2 100%)"
+                        ></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-if="this.$store.state.lossantosPage.vehicleCardData" class="w-full flex items-center justify-center h-[16.6%]">
+            <div class="w-[90%] h-full">
+                <div class="w-full h-[40%] flex items-center justify-between">
+                    <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 0.8vw">{{locales.SUSPENSION}}</h2>
+                    <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 0.8vw">
+                        %{{this.$store.state.lossantosPage.vehicleCardData.suspension.toFixed(0)}}
+                    </h2>
+                </div>
+                <div class="w-full h-[60%] flex items-center justify-start">
+                    <div
+                        class="w-full h-[20%]"
+                        style="border-radius: 0.3vw; background: linear-gradient(90deg, rgba(188, 132, 255, 0.32) 0%, rgba(217, 217, 217, 0.32) 100%)"
+                    >
+                        <div
+                            class="h-full transition-all duration-500"
+                            :style="{'width' : this.$store.state.lossantosPage.vehicleCardData.suspension + '%' }"
+                            style="border-radius: 0.3vw; background: linear-gradient(90deg, #bc84ff 0%, #88fda2 100%)"
+                        ></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-if="this.$store.state.lossantosPage.vehicleCardData" class="w-full flex items-center justify-center h-[16.6%]">
+            <div class="w-[90%] h-full">
+                <div class="w-full h-[40%] flex items-center justify-between">
+                    <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 0.8vw">{{locales.BRAKES}}</h2>
+                    <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 0.8vw">
+                        %{{this.$store.state.lossantosPage.vehicleCardData.brakes.toFixed(0)}}
+                    </h2>
+                </div>
+                <div class="w-full h-[60%] flex items-center justify-start">
+                    <div
+                        class="w-full h-[20%]"
+                        style="border-radius: 0.3vw; background: linear-gradient(90deg, rgba(188, 132, 255, 0.32) 0%, rgba(217, 217, 217, 0.32) 100%)"
+                    >
+                        <div
+                            class="h-full transition-all duration-500"
+                            :style="{'width' : this.$store.state.lossantosPage.vehicleCardData.brakes + '%' }"
+                            style="border-radius: 0.3vw; background: linear-gradient(90deg, #bc84ff 0%, #88fda2 100%)"
+                        ></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-if="this.$store.state.lossantosPage.vehicleCardData" class="w-full flex items-center justify-center h-[16.6%]">
+            <div class="w-[90%] h-full">
+                <div class="w-full h-[40%] flex items-center justify-between">
+                    <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 0.8vw">{{locales.ARMOR}}</h2>
+                    <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 0.8vw">
+                        %{{this.$store.state.lossantosPage.vehicleCardData.armor.toFixed(0)}}
+                    </h2>
+                </div>
+                <div class="w-full h-[60%] flex items-center justify-start">
+                    <div
+                        class="w-full h-[20%]"
+                        style="border-radius: 0.3vw; background: linear-gradient(90deg, rgba(188, 132, 255, 0.32) 0%, rgba(217, 217, 217, 0.32) 100%)"
+                    >
+                        <div
+                            class="h-full transition-all duration-500"
+                            :style="{'width' : this.$store.state.lossantosPage.vehicleCardData.armor + '%' }"
+                            style="border-radius: 0.3vw; background: linear-gradient(90deg, #bc84ff 0%, #88fda2 100%)"
+                        ></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-if="this.$store.state.lossantosPage.vehicleCardData" class="w-full flex items-center justify-center h-[16.6%]">
+            <div class="w-[90%] h-full">
+                <div class="w-full h-[40%] flex items-center justify-between">
+                    <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 0.8vw">{{locales.TURBO}}</h2>
+                    <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 0.8vw">
+                        %{{this.$store.state.lossantosPage.vehicleCardData.turbo.toFixed(0)}}
+                    </h2>
+                </div>
+                <div class="w-full h-[60%] flex items-center justify-start">
+                    <div
+                        class="w-full h-[20%]"
+                        style="border-radius: 0.3vw; background: linear-gradient(90deg, rgba(188, 132, 255, 0.32) 0%, rgba(217, 217, 217, 0.32) 100%)"
+                    >
+                        <div
+                            class="h-full transition-all duration-500"
+                            :style="{'width' : this.$store.state.lossantosPage.vehicleCardData.turbo + '%' }"
+                            style="border-radius: 0.3vw; background: linear-gradient(90deg, #ff9c65 0%, #ff9c65 100%)"
+                        ></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

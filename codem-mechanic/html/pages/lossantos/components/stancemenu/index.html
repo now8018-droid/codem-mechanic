@@ -1,0 +1,57 @@
+<div
+    class="w-full h-[92%]"
+    :style="{'background-image': 'url(./images/' + this.$store.state.lossantosPage.currentThema + '/stancebg.png)'}"
+    style="background-size: 100% 100%"
+>
+    <div class="w-full h-[10.5%]">
+        <div class="w-full h-full flex items-center justify-start flex">
+            <div class="w-[50%] h-full flex items-center justify-center cursor-pointer">
+                <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 1vw">Stance</h2>
+            </div>
+            <div class="w-[50%] h-full flex items-center justify-start cursor-pointer" @click="stanceMenuClose">
+                <h2 style="font-family: sf-pro-rounded-bold; color: rgba(255, 255, 255, 0.12); font-size: 1vw">Vehicle Spec</h2>
+            </div>
+        </div>
+    </div>
+    <div class="w-full h-[89%] flex items-center justify-center">
+        <div class="w-[90%] h-full">
+            <div class="w-full h-[13%]" v-for="data in stanceData">
+                <div class="w-full h-[40%] flex items-center justify-between">
+                    <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 0.7vw">{{data.label}}</h2>
+                    <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 0.7vw">{{data.value}}</h2>
+                </div>
+                <div class="w-full h-[60%] flex items-center justify-center">
+                    <div class="w-[10%] h-full flex items-center">
+                        <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 0.7vw">{{data.min}}</h2>
+                    </div>
+                    <div class="w-[90%] h-full flex items-center justify-center">
+                        <input
+                            id="slider"
+                            :ref="`mySlider-${data.name}`"
+                            :min="data.min"
+                            :step="data.step"
+                            :max="data.max"
+                            v-model="data.value"
+                            type="range"
+                            @change="updateSlider(data)"
+                            class="w-full h-[20%] stancemenu rounded-[0.2vw]"
+                        />
+                    </div>
+                    <div class="w-[10%] h-full flex items-center justify-end">
+                        <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 0.7vw">{{data.max}}</h2>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="w-full h-[10%] mt-[3vh] flex items-center justify-center rounded-[0.2vw] cursor-pointer"
+                @click="saveStance"
+                style="background-color: #ff9c65"
+            >
+                <h2 style="font-family: sf-pro-rounded-bold; color: #603b27; font-size: 0.9vw">Save</h2>
+            </div>
+            <div class="w-full h-[10%] mt-[1vh] flex items-center justify-center rounded-[0.2vw] cursor-pointer" style="background-color: #bc84ff">
+                <h2 style="font-family: sf-pro-rounded-bold; color: #583e77; font-size: 0.9vw">Revert to Defaults</h2>
+            </div>
+        </div>
+    </div>
+</div>

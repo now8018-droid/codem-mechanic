@@ -1,0 +1,419 @@
+<div v-if="openPage" class="w-full h-[100vh] flex items-start justify-start relative" :style="{'background-image': 'url(./images/' + this.$store.state.lossantosPage.currentThema + '/bg-overlay.png)'}" style="background-size: 100% 100%">
+    <div class="w-full h-full relative flex flex-wrap">
+        <transition-group name="bottom-container">
+            <div v-if="deleteVehicleBasketData" class="w-full h-full absolute flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.72); z-index: 5">
+                <div class="w-[30%] h-[22%] mb-[5vh] flex items-start justify-center flex-wrap content-start" :style="{'background-image': 'url(./images/' + this.$store.state.lossantosPage.currentThema + '/basketdelete.png)'}" style="background-size: 100% 100%">
+                    <div class="w-full h-[25%] flex items-center justify-center">
+                        <div class="w-[85%] h-full flex items-end">
+                            <h2 style="font-family: sf-pro-rounded-bold; font-size: 0.8vw; color: #ff9c65">{{deleteVehicleBasketData.label}}</h2>
+                        </div>
+                    </div>
+                    <div class="w-full h-[30%] flex items-center justify-center">
+                        <div class="w-[85%] h-full flex items-center">
+                            <h2 style="font-family: sf-pro-rounded-bold; font-size: 0.8vw; color: white">{{locales.WARNING_MESSAGE_2}}</h2>
+                        </div>
+                    </div>
+                    <div class="w-full h-[33%] flex items-end justify-start">
+                        <div class="w-[58%] h-[85%] flex items-center flex items-center justify-end">
+                            <div class="w-[77%] h-full flex items-center justify-center cursor-pointer" @click="deleteItemBasket(deleteVehicleBasketData)">
+                                <h2 style="font-family: sf-pro-rounded-bold; font-size: 0.9vw; color: white">{{locales.YES}}</h2>
+                            </div>
+                        </div>
+                        <div class="w-[32%] h-[85%] flex items-center flex items-center justify-end">
+                            <div class="w-[68%] h-full flex items-center justify-center cursor-pointer" @click="deleteItemBasket(false)">
+                                <h2 style="font-family: sf-pro-rounded-bold; font-size: 0.9vw; color: white">X</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition-group>
+
+        <div class="w-[21%] h-full absolute flex items-center justify-end">
+            <div v-if="!currentCategory" class="w-[90%] h-full" :style="{'background-image': 'url(./images/' + this.$store.state.lossantosPage.currentThema + '/left-navi.png)'}" style="background-size: 100% 100%">
+                <div class="w-full h-[19.5%]">
+                    <div class="w-full h-[41.5%] flex items-center justify-center relative">
+                        <div class="absolute w-[50%] h-[45%] flex items-start justify-center">
+                            <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 0.8vw">{{locales.MECHANIC}}</h2>
+                        </div>
+                        <img class="h-[80%]" src="./images/purple/mechaniclogo.png" alt="" />
+                    </div>
+                    <div class="relative w-full h-[55.5%] flex items-center justify-center">
+                        <div class="w-[62%] h-full flex flex-col items-center justify-center">
+                            <h2 v-html="locales.WELCOME_MESSAGE.format(this.$store.state.lossantosPage.mechanicLabel, this.$store.state.profileAccount.name)" style="font-family: sf-pro-rounded-bold; color: white; font-size: 0.8vw"></h2>
+                        </div>
+
+                        <div class="absolute w-[69.2%] h-[4%] bottom-[0] left-[0] ml-[1.9vw]" style="background-color: rgba(255, 255, 255, 0.24)"></div>
+                    </div>
+                </div>
+                <div class="w-full flex items-end justify-start h-[7.1%]">
+                    <div class="categoryItemMechanic w-[71.2%] h-[88%] ml-[1.35vw] flex items-center justify-center" :class="[$store.state.lossantosPage.currentThema]" @click="changeCategory('upgrade', 'UPGRADE')" style="clip-path: polygon(3.4% 0, 100% 0, 95% 100%, 0% 100%); background-color: rgba(0, 0, 0, 0.24)">
+                        <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 1vw">{{locales.UPGRADES}}</h2>
+                        <img v-if="this.$store.state.lossantosPage.categoryLocked['upgrade']" class="h-[35%] ml-[1vw]" src="./images/purple/locked.png" alt="" />
+                    </div>
+                </div>
+                <div class="w-full flex items-end justify-start h-[7.1%]">
+                    <div class="categoryItemMechanic w-[68.9%] h-[88%] ml-[1vw] flex items-center justify-center" :class="[$store.state.lossantosPage.currentThema]" @click="changeCategory('bodyparts','BODY PARTS')" style="clip-path: polygon(2% 0, 100% 0, 96% 100%, 0% 100%); background-color: rgba(0, 0, 0, 0.24)">
+                        <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 1vw">{{locales.BODY_PARTS}}</h2>
+                        <img v-if="this.$store.state.lossantosPage.categoryLocked['bodyparts']" class="h-[35%] ml-[1vw]" src="./images/purple/locked.png" alt="" />
+                    </div>
+                </div>
+                <div class="w-full flex items-end justify-start h-[7.1%]">
+                    <div class="categoryItemMechanic w-[67.3%] h-[88%] ml-[0.7vw] flex items-center justify-center" :class="[$store.state.lossantosPage.currentThema]" @click="changeCategory('interiors', 'INTERIORS')" style="clip-path: polygon(2% 0, 100% 0, 97.5% 100%, 0% 100%); background-color: rgba(0, 0, 0, 0.24)">
+                        <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 1vw">{{locales.INTERIORS}}</h2>
+                        <img v-if="this.$store.state.lossantosPage.categoryLocked['interiors']" class="h-[35%] ml-[1vw]" src="./images/purple/locked.png" alt="" />
+                    </div>
+                </div>
+                <div class="w-full flex items-end justify-start h-[7.1%]">
+                    <div class="categoryItemMechanic w-[66.8%] h-[88%] ml-[0.5vw] flex items-center justify-center" :class="[$store.state.lossantosPage.currentThema]" style="clip-path: polygon(1.5% 0, 100% 0, 98.5% 100%, 0% 100%); background-color: rgba(0, 0, 0, 0.24)" @click="changeCategory('liveries', 'LIVERIES')">
+                        <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 1vw">{{locales.LIVERIES}}</h2>
+                        <img v-if="this.$store.state.lossantosPage.categoryLocked['liveries']" class="h-[35%] ml-[1vw]" src="./images/purple/locked.png" alt="" />
+                    </div>
+                </div>
+                <div class="w-full flex items-end justify-start h-[7.1%]">
+                    <div class="categoryItemMechanic w-[65.6%] h-[88%] ml-[0.45vw] flex items-center justify-center" :class="[$store.state.lossantosPage.currentThema]" style="clip-path: polygon(0% 0, 100% 0, 100% 100%, 0% 100%); background-color: rgba(0, 0, 0, 0.24)" @click="changeCategory('horns', 'HORNS')">
+                        <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 1vw">{{locales.HORNS}}</h2>
+                        <img v-if="this.$store.state.lossantosPage.categoryLocked['horns']" class="h-[35%] ml-[1vw]" src="./images/purple/locked.png" alt="" />
+                    </div>
+                </div>
+                <div class="w-full flex items-end justify-start h-[7.1%]">
+                    <div class="categoryItemMechanic w-[66%] h-[88%] ml-[0.45vw] flex items-center justify-center" :class="[$store.state.lossantosPage.currentThema]" style="clip-path: polygon(0% 0, 99% 0, 100% 100%, 1% 100%); background-color: rgba(0, 0, 0, 0.24)" @click="changeCategory('neons','NEONS')">
+                        <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 1vw">{{locales.NEONS}}</h2>
+                        <img v-if="this.$store.state.lossantosPage.categoryLocked['neons']" class="h-[35%] ml-[1vw]" src="./images/purple/locked.png" alt="" />
+                    </div>
+                </div>
+                <div class="w-full flex items-end justify-start h-[7.1%]">
+                    <div class="categoryItemMechanic w-[67.4%] h-[88%] ml-[0.5vw] flex items-center justify-center" :class="[$store.state.lossantosPage.currentThema]" style="clip-path: polygon(0% 0, 97.5% 0, 100% 100%, 2% 100%); background-color: rgba(0, 0, 0, 0.24)" @click="changeCategory('paint', 'PAINT JOB')">
+                        <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 1vw">{{locales.PAINT_JOB}}</h2>
+                        <img v-if="this.$store.state.lossantosPage.categoryLocked['paint']" class="h-[35%] ml-[1vw]" src="./images/purple/locked.png" alt="" />
+                    </div>
+                </div>
+                <div class="w-full flex items-end justify-start h-[7.1%]">
+                    <div class="categoryItemMechanic w-[68.5%] h-[88%] ml-[0.75vw] flex items-center justify-center" :class="[$store.state.lossantosPage.currentThema]" style="clip-path: polygon(0% 0, 96.5% 0, 100% 100%, 3% 100%); background-color: rgba(0, 0, 0, 0.24)" @click="changeCategory('extra','EXTRA')">
+                        <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 1vw">EXTRAS</h2>
+                        <img v-if="this.$store.state.lossantosPage.categoryLocked['stance']" class="h-[35%] ml-[1vw]" src="./images/purple/locked.png" alt="" />
+                    </div>
+                </div>
+                <div class="w-full h-[1.5%] flex items-end justify-start">
+                    <div class="w-[66.7%] h-[20%] ml-[1.2vw]" style="background-color: rgba(255, 255, 255, 0.24)"></div>
+                </div>
+                <div class="w-full flex items-end justify-start h-[7.1%]">
+                    <div class="categoryItemMechanic w-[70%] h-[85%] ml-[1.3vw] flex items-center justify-center cursor-pointer" :class="[$store.state.lossantosPage.currentThema]" :style="{'background-color' : this.$store.state.lossantosPage.currentColor[this.$store.state.lossantosPage.currentThema]}" style="clip-path: polygon(0% 0, 95.5% 0, 100% 100%, 3% 100%)" @click="changeCategory('repair','repair')">
+                        <h2
+                            :style="{
+                           
+                            'color': this.$store.state.lossantosPage.currentThema === 'white' ? 'black' : 'white'
+                        }"
+                            style="font-family: sf-pro-rounded-bold; font-size: 1vw"
+                        >
+                            {{locales.REPAIR}}
+                        </h2>
+                        <img v-if="this.$store.state.lossantosPage.categoryLocked['repair']" class="h-[35%] ml-[1vw]" src="./images/purple/locked.png" alt="" />
+                    </div>
+                </div>
+                <div class="w-full flex items-end justify-start h-[7.5%]">
+                    <div class="categoryItemMechanic w-[72.5%] h-[85%] ml-[1.8vw] flex items-center justify-center cursor-pointer" :class="[$store.state.lossantosPage.currentThema]" :style="{'background-color' : this.$store.state.lossantosPage.currentColor[this.$store.state.lossantosPage.currentThema]}" style="clip-path: polygon(0% 0, 94% 0, 100% 100%, 4.5% 100%)" @click="changeCategory('clean','clean')">
+                        <h2
+                            :style="{
+                           
+                            'color': this.$store.state.lossantosPage.currentThema === 'white' ? 'black' : 'white'
+                        }"
+                            style="font-family: sf-pro-rounded-bold; font-size: 1vw"
+                        >
+                            {{locales.CLEAN}}
+                        </h2>
+                        <img v-if="this.$store.state.lossantosPage.categoryLocked['clean']" class="h-[35%] ml-[1vw]" src="./images/purple/locked.png" alt="" />
+                    </div>
+                </div>
+                <div class="w-full flex items-end justify-start h-[7%]">
+                    <div class="categoryItemMechanic w-[75.3%] h-[85%] ml-[2.5vw] flex items-center justify-center cursor-pointer" :class="[$store.state.lossantosPage.currentThema]" style="clip-path: polygon(0% 0, 92.5% 0, 100% 100%, 4.9% 100%)" :style="{'background-color' : this.$store.state.lossantosPage.currentColor[this.$store.state.lossantosPage.currentThema]}" @click="changeCategory('freecam','repair')">
+                        <h2
+                            :style="{
+                           
+                            'color': this.$store.state.lossantosPage.currentThema === 'white' ? 'black' : 'white'
+                        }"
+                            style="font-family: sf-pro-rounded-bold; font-size: 1vw"
+                        >
+                            {{locales.FREECAM}}
+                        </h2>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="currentCategory" class="w-[90%] h-full" :style="{'background-image': 'url(./images/' + this.$store.state.lossantosPage.currentThema + '/left-navi.png)'}" style="background-size: 100% 100%">
+                <div class="w-full h-[19.5%]">
+                    <div class="w-full h-[41.5%] flex items-center justify-center relative">
+                        <div class="absolute w-[50%] h-[45%] flex items-start justify-center">
+                            <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 0.8vw">{{locales.MECHANIC}}</h2>
+                        </div>
+                        <img class="h-[80%]" src="./images/purple/mechaniclogo.png" alt="" />
+                    </div>
+                    <div class="relative w-full h-[55.5%] flex items-center justify-center">
+                        <div class="w-[80%] h-full flex flex-col items-start justify-center">
+                            <div class="w-[80%] h-[50%] full ml-[1vw] flex items-center justify-start">
+                                <img class="h-[50%] ml-[1vw] cursor-pointer" :src="'./images/' + this.$store.state.lossantosPage.currentThema + '/backicon.png'" @click="backToCategory" />
+                                <h2 class="ml-[1vw]" style="font-family: sf-pro-rounded-bold; font-size: 1vw; color: white">{{selectTextHeader}}</h2>
+                            </div>
+                        </div>
+
+                        <div class="absolute w-[69.2%] h-[4%] bottom-[0] left-[0] ml-[1.9vw]" style="background-color: rgba(255, 255, 255, 0.24)"></div>
+                    </div>
+                </div>
+
+                <div v-for="(data,index) in currentItems" :key="index" @click="selectMechanicCategoryItem(data)" class="w-full flex items-end justify-start h-[7.1%]">
+                    <div class="categoryItemMechanic h-[88%] flex items-center justify-center" :class="[$store.state.lossantosPage.currentThema]" :style="currentCategoryTable[data.name] ? {'background-color' : this.$store.state.lossantosPage.currentColor[this.$store.state.lossantosPage.currentThema],'filter' : 'drop-shadow(0px 0px 0.5vw #bc84ff) !important'} : {'background-color' : 'rgba(0, 0, 0, 0.24)'},  {'clip-path' : data.clip, 'width' : data.width, 'margin-left' : data.margin}" style="">
+                        <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 1vw">{{data.label}}</h2>
+                        <img v-if="data.locked" class="h-[35%] ml-[1vw]" src="./images/purple/locked.png" alt="" />
+                    </div>
+                </div>
+                <div class="w-full h-[9%] flex items-center justify-center">
+                    <img v-if="currentPage < totalPages" class="h-[40%] cursor-pointer" @click="currentPage++" style="transform: rotate(270deg)" :src="'./images/' + this.$store.state.lossantosPage.currentThema + '/backicon.png'" alt="" />
+                    <img v-if="currentPage > 1" class="h-[40%] cursor-pointer" @click="currentPage--" style="transform: rotate(90deg)" :src="'./images/' + this.$store.state.lossantosPage.currentThema + '/backicon.png'" alt="" />
+                </div>
+            </div>
+        </div>
+        <div class="w-full h-[8.2%] flex items-center justify-center">
+            <div class="w-[95%] h-full flex" style="border-bottom: 1px solid gray; border-image: linear-gradient(100deg, white 0%, #af261c00 0%, #af261c00 0%, gray 100%) 40">
+                <div class="w-[33.33%] h-full"></div>
+                <div class="w-[33.33%] h-full flex items-center justify-center">
+                    <div class="w-[70%] h-full flex items-center justify-center" style="border-bottom: 3px solid white">
+                        <h2 style="font-family: sf-pro-rounded-bold; font-size: 1.4vw; color: white; text-transform: uppercase">{{this.$store.state.lossantosPage.mechanicLabel}}</h2>
+                    </div>
+                </div>
+                <div class="w-[33.33%] h-full flex items-center justify-end">
+                    <div class="w-[30%] h-[85%] flex items-end justify-center flex-col">
+                        <h2 style="font-family: sf-pro-rounded-bold; color: white; letter-spacing: 0.05vw">{{this.$store.state.profileAccount.name}}</h2>
+                        <h2 :style="{'color' : this.$store.state.lossantosPage.currentColor[this.$store.state.lossantosPage.currentThema]}" style="font-family: sf-pro-rounded-bold; letter-spacing: 0.05vw">$ {{this.$store.state.lossantosPage.mechanicVault}}</h2>
+                    </div>
+                    <div class="w-[12%] h-[85%] flex items-center justify-center">
+                        <div v-if="this.$store.state.profileAccount" class="w-[70%] h-[70%] rounded-[50%] flex items-center justify-center" :style="{ border: '2px solid ' + this.$store.state.lossantosPage.currentColor[this.$store.state.lossantosPage.currentThema] }">
+                            <img class="w-[90%] h-[90%] rounded-[50%]" :src="this.$store.state.profileAccount.avatar" alt="" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="w-[21%] h-[92%]" style="z-index: -1"></div>
+        <div class="w-[60%] h-[92%] flex items-end justify-center relative">
+            <div class="w-[3.5%] h-[3.5%] absolute bottom-[25vh] right-[1.5vw] cursor-pointer" @click="changeCategory('freecam2')" :style="{'background-image': 'url(./images/' + this.$store.state.lossantosPage.currentThema + '/freecam2.png)'}" style="background-size: 100% 100%"></div>
+            <div class="w-full h-[26%] content-start flex items-start flex-wrap">
+                <div class="w-full h-[11%] flex">
+                    <div class="w-[50%] h-full">
+                        <h2 v-if="mechanicCategoryItemName.name == 'wheel'" style="font-family: sf-pro-rounded-bold; color: white">{{mechanicCategoryItemName.label}}</h2>
+                        <h2 v-else-if="mechanicCategoryItemName.name == 'wheeltype'" style="font-family: sf-pro-rounded-bold; color: white">
+                            <span style="color: rgba(255, 255, 255, 0.29); cursor: pointer" @click="changeVehicleModification(false,false,'wheel')">{{locales.WHEELS}} ></span>
+                            {{mechanicCategoryItemName.label}}
+                        </h2>
+                        <h2 v-else-if="['sport','muscle','lowrider','suv','offroad','tuner','bike','highend', 'stock' ].includes(mechanicCategoryItemName.name)" style="font-family: sf-pro-rounded-bold; color: white">
+                            <span style="color: rgba(255, 255, 255, 0.29); cursor: pointer" @click="changeVehicleModification(false,false,'wheel')">{{locales.WHEELS}} ></span>
+                            <span style="color: rgba(255, 255, 255, 0.29); cursor: pointer" @click="changeVehicleModification(false,false,'wheeltype')">{{locales.WHEEL_TYPES}} ></span>
+                            {{mechanicCategoryItemName.label}}
+                        </h2>
+                        <h2 v-else style="font-family: sf-pro-rounded-bold; color: white">{{mechanicCategoryItemName.label}}</h2>
+                    </div>
+                    <div v-if="mechanicCategoryItemName.count > 0" class="w-[50%] h-full flex items-center justify-end">
+                        <div class="w-[5%] h-full flex items-center justify-center">
+                            <img src="./images/purple/right.png" class="h-[60%]" id="test" style="transform: rotate(180deg)" alt="" />
+                        </div>
+                        <div class="w-[5%] h-full flex items-center justify-center" style="margin-right: 1vw">
+                            <img src="./images/purple/right.png" class="h-[60%]" id="test1" style="transform: rotate(0deg)" alt="" />
+                        </div>
+                    </div>
+                    <div v-else-if="mechanicCategoryItemName.name ==  'wheeltype' || 'windowtint'" class="w-[50%] h-full flex items-center justify-end">
+                        <div class="w-[5%] h-full flex items-center justify-center">
+                            <img src="./images/purple/right.png" class="h-[60%]" id="test" style="transform: rotate(180deg)" alt="" />
+                        </div>
+                        <div class="w-[5%] h-full flex items-center justify-center" style="margin-right: 1vw">
+                            <img src="./images/purple/right.png" class="h-[60%]" id="test1" style="transform: rotate(0deg)" alt="" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-[98%] h-[67%] relative mt-[1vh] flex flex-wrap justify-start" style="overflow: hidden">
+                    <div id="bottomcategory" class="swiper-container w-full h-full">
+                        <div class="swiper-wrapper">
+                            <transition-group name="bottom-container">
+                                <div class="swiper-slide w-[23%] h-full relative" :class="[$store.state.lossantosPage.currentThema]" v-if="mechanicCategoryItemName && !vehicleNotSupport" v-for="(data,index) in mechanicCategoryItemName.count" style="overflow: hidden; cursor: pointer" @mouseover="mouseOver(index)" @mouseleave="mouseLeave" @click="changeVehicleModification(mechanicCategoryItemName.modId, index,data.name,findVehiclePrice(index,mechanicCategoryItemName.isFixedPrice))" :key="mechanicCategoryItemName.label+index" :style="{'background-image' : 'url(./images/'+this.$store.state.lossantosPage.currentThema+'/'+mechanicCategoryItemName.background+'.png)', 'background-size' : '100% 100%'}">
+                                    <div v-if="['primarycolor','allsidesneon','secondarycolor','tiresmoke'].includes(data.name)" class="absolute w-[17%] h-[29%] right-[1.6vw] top-[5.2vh] cursor-pointer" :style="{'background-image': 'url(./images/' + this.$store.state.lossantosPage.currentThema + '/paintbg.png)'}" style="background-size: 100% 100%; filter: drop-shadow(0px 0px 0.5vw #bc84ff)">
+                                        <input v-model="selectedColor" class="special-color-fields cursor-pointer" @click="openColoris" @close="OnChangeColor" :data-type="data.name" data-coloris />
+                                    </div>
+                                    <div class="w-full h-[18%]">
+                                        <div class="w-full h-full flex items-center justify-start" style="background-color: rgba(0, 0, 0, 0.19); backdrop-filter: blur(1vw)">
+                                            <div v-if="['wheel','xenon', 'wheeltype','stocktubo','turbo','rimtype','classicrim','paintColor','neon'].includes(mechanicCategoryItemName.name)" class="w-[85%] h-full flex items-center justify-start">
+                                                <h2 style="font-family: sf-pro-rounded-bold; color: white; text-indent: 0.5vw; font-size: 0.7vw">{{data.label}}</h2>
+                                            </div>
+                                            <div v-else class="w-[85%] h-full flex items-center justify-start">
+                                                <h2 style="font-family: sf-pro-rounded-bold; color: white; text-indent: 0.5vw; font-size: 0.7vw">{{mechanicCategoryItemName.label}} {{index + 1}}</h2>
+                                            </div>
+                                            <div class="w-[15%] h-full flex items-center justify-end">
+                                                <div v-if="['engines', 'transmission','suspension','brakes','armor','turbo'].includes(mechanicCategoryItemName.name)" class="w-[80%] h-full flex items-center justify-end" style="clip-path: polygon(100% 0, 0% 0, 100% 95%)" :style="{'background-color' : getInfoColor(index + 1)}"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="w-full h-[15.5%]">
+                                        <!-- <div class="w-[85%] h-full flex items-end justify-start">
+                                            <h2
+                                                v-if="['wheel', 'wheeltype','rimtype'].includes(mechanicCategoryItemName.name)"
+                                                style="font-family: sf-pro-rounded-bold; color: white; text-indent: 0.5vw; font-size: 0.7vw"
+                                            >
+                                                {{data.text}}
+                                            </h2>
+                                            <h2 v-else style="font-family: sf-pro-rounded-bold; color: white; text-indent: 0.5vw; font-size: 0.7vw">
+                                                Price
+                                            </h2>
+                                        </div> -->
+                                        <div v-if="mechanicCategoryItemName.name ==  'wheeltype' " class="w-[70%] h-full flex items-center justify-start mt-[1vh]"></div>
+                                        <div v-else-if="['wheel'].includes(mechanicCategoryItemName.name)" class="w-[70%] h-full flex items-center justify-start mt-[1vh]" style="background-image: url(./images/purple/pricebg.png); background-size: 100% 100%">
+                                            <h2 style="font-family: sf-pro-rounded-bold; color: white; text-indent: 0.8vw; font-size: 0.7vw">{{data.text}}</h2>
+                                        </div>
+                                        <div v-else class="w-[70%] h-full flex items-center justify-start mt-[1vh]" style="background-image: url(./images/purple/pricebg.png); background-size: 100% 100%">
+                                            <h2 style="font-family: sf-pro-rounded-bold; color: white; text-indent: 0.8vw; font-size: 0.7vw">{{locales.PRICE}}</h2>
+                                        </div>
+                                    </div>
+
+                                    <div class="w-full h-[42%]">
+                                        <div class="w-[85%] h-full flex items-center justify-start">
+                                            <h2 v-if="['wheel', 'wheeltype','rimtype' ].includes(mechanicCategoryItemName.name)" :style="{'color' : this.$store.state.lossantosPage.currentColor[this.$store.state.lossantosPage.currentThema]}" style="font-family: sf-pro-rounded-bold; text-indent: 1vw; font-size: 1.2vw"></h2>
+                                            <h2 v-else-if="['stockneon','clearvehicle','allcolor','primarycolor', 'pearlescentcolor','xenoncolor', 'secondarycolor','extracolor','tiresmoke', 'turbo','stockturbo','allsidesneon','stockxenon','xenon','tint-1', 'tint0', 'tint1', 'tint2', 'tint3', 'tint4'].includes(data.name)" :style="{'color' : this.$store.state.lossantosPage.currentColor[this.$store.state.lossantosPage.currentThema]}" style="font-family: sf-pro-rounded-bold; text-indent: 1vw; font-size: 1.2vw">{{data.price}} $</h2>
+
+                                            <h2 v-else style="font-family: sf-pro-rounded-bold; text-indent: 1vw; font-size: 1.2vw" :style="{'color' : this.$store.state.lossantosPage.currentColor[this.$store.state.lossantosPage.currentThema]}">{{findVehiclePrice(index,mechanicCategoryItemName.isFixedPrice)}} $</h2>
+                                        </div>
+                                    </div>
+                                    <div class="w-full h-[19%] bghover flex items-center justify-center relative" style="background-color: rgba(188, 132, 255, 0.19); backdrop-filter: blur(1vw)" :style=" {'background-color': index === hoveredIndex ? this.$store.state.lossantosPage.currentColor[this.$store.state.lossantosPage.currentThema] : 'rgba(188, 132, 255, 0.19)'}">
+                                        <div v-if="mechanicCategoryItemName.stock == index" class="absolute w-[10%] h-full right-[0] flex items-center justifty-center">
+                                            <img class="h-[50%]" src="./images/purple/installed.png" alt="" />
+                                        </div>
+                                        <h2 v-if="mechanicCategoryItemName.stock == index" style="font-family: sf-pro-rounded-bold; color: white; font-size: 0.6vw">{{locales.INSTALLED}}</h2>
+
+                                        <h2 v-else style="font-family: sf-pro-rounded-bold; color: white; font-size: 0.6vw">{{locales.INSTALL_NOW}}</h2>
+                                    </div>
+                                </div>
+                                <div v-else-if="vehicleNotSupport" class="w-full h-full flex items-center justify-center" style="background-color: rgba(0, 0, 0, 0.37)">
+                                    <h2 style="font-family: sf-pro-rounded-bold; color: rgba(255, 255, 255, 0.53)">{{locales.NO_PART_FOUND}}</h2>
+                                </div>
+                            </transition-group>
+                        </div>
+                    </div>
+                    <!-- <div
+                        v-else-if="mechanicCategoryItemName.count <= 0"
+                        class="w-full h-full flex items-center justify-center"
+                        style="background-color: rgba(0, 0, 0, 0.37)"
+                    >
+                        <h2 style="font-family: sf-pro-rounded-bold; color: rgba(255, 255, 255, 0.53)">No Parts Founded For This Vehicle!</h2>
+                    </div> -->
+                </div>
+                <div class="w-full h-[10%] mt-[1vh]">
+                    <div v-if="mechanicCategoryItemName" class="swiper-pagination"></div>
+                </div>
+            </div>
+        </div>
+        <div class="w-[19%] h-[92%] relative flex-wrap content-start flex items-start justify-start" style="overflow: hidden">
+            <transition name="summaryModal">
+                <div v-if="summaryModal" class="w-[88%] h-[73%] absolute bottom-[20.5vh]" :style="{'background-image': 'url(./images/' + this.$store.state.lossantosPage.currentThema + '/summarybg.png)'}" style="z-index: 2; background-size: 100% 100%">
+                    <div class="w-full h-[8%] flex">
+                        <div class="w-[70%] h-full flex items-center justify-start">
+                            <h2 style="font-family: sf-pro-rounded-bold; color: white; text-indent: 1vw; font-size: 1.1vw">{{locales.SUMMARY}}</h2>
+                        </div>
+                        <div class="w-[30%] h-full flex items-center justify-center">
+                            <img src="./images/purple/upicon.png" class="h-[40%] cursor-pointer" style="transform: rotate(0deg)" @click="openSummaryModal(false)" alt="" />
+                        </div>
+                    </div>
+                    <div class="w-full h-[76%] flex items-start justify-center no-scrollbar" style="overflow: auto">
+                        <div class="w-[90%] h-[95%] mt-[1vh]">
+                            <div v-for="data in this.$store.state.lossantosPage.vehicleBasket" class="w-full h-[5%] flex items-center justify-between cursor-pointer" @click="deleteVehicleBasket(data)">
+                                <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 0.7vw">{{data.label}} - {{data.index +1}}</h2>
+                                <h2 :style="{'color' : this.$store.state.lossantosPage.currentColor[this.$store.state.lossantosPage.currentThema]}" style="font-family: sf-pro-rounded-bold; font-size: 0.7vw">{{data.price}} $</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full h-[16%]">
+                        <div class="w-full h-[40%] flex items-end justify-start">
+                            <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 1vw; text-indent: 0.7vw">{{locales.TOTAL_PRICE}}</h2>
+                        </div>
+                        <div class="w-full h-[40%] flex items-end justify-start">
+                            <h2 :style="{'color' : this.$store.state.lossantosPage.currentColor[this.$store.state.lossantosPage.currentThema]}" style="font-family: sf-pro-rounded-bold; font-size: 1.7vw; text-indent: 0.7vw">{{totalPriceVehicleBasket}} $</h2>
+                        </div>
+                    </div>
+                </div>
+            </transition>
+            <transition name="summaryModal">
+                <div v-if="billModal" class="w-[88%] h-[80%] absolute bottom-[14.5vh]" :style="{'background-image': 'url(./images/' + this.$store.state.lossantosPage.currentThema + '/billbg.png)'}" style="z-index: 2; background-size: 100% 100%">
+                    <div class="w-full h-[8%] flex">
+                        <div class="w-[70%] h-full flex items-center justify-start">
+                            <h2 style="font-family: sf-pro-rounded-bold; color: rgba(0, 0, 0, 0.62); text-indent: 1vw; font-size: 1.1vw">{{locales.BILL_PLAYER}}</h2>
+                        </div>
+                        <div class="w-[30%] h-full flex items-center justify-center">
+                            <img src="./images/purple/billicon.png" class="h-[40%] cursor-pointer" style="transform: rotate(180deg)" @click="openBillModal(false)" alt="" />
+                        </div>
+                    </div>
+                    <div class="w-full h-[72.5%] flex items-start justify-center no-scrollbar" style="overflow: auto">
+                        <div class="w-[90%] h-full flex flex-wrap content-start">
+                            <div v-if="nearbyPlayers" v-for="data in nearbyPlayers" class="w-full h-[10%] mt-[0.5vh] flex items-center justify-start">
+                                <div class="w-[23%] h-full flex items-center justify-center">
+                                    <div class="w-[75%] h-[85%] flex items-center justify-center" style="border-radius: 50%; border: 2px solid #bc84ff">
+                                        <img :src="data.avatar" class="h-[90%]" style="border-radius: 50%" alt="" />
+                                    </div>
+                                </div>
+                                <div class="w-[60%] h-full flex items-center justify-start">
+                                    <h2 style="font-family: sf-pro-rounded-bold; color: rgba(0, 0, 0, 0.62); font-size: 1vw; text-indent: 0.7vw">{{data.name}}</h2>
+                                </div>
+                                <div class="w-[18%] h-full flex items-center justify-center cursor-pointer" @click="showNearbyPlayerBill(data.id)">
+                                    <img src="./images/purple/bill-icon-other.png" class="h-[40%]" />
+                                </div>
+                                <div class="w-[18%] h-full flex items-center justify-center cursor-pointer" @click="billPlayer(data.id)">
+                                    <img src="./images/purple/billiconsmall.png" class="h-[40%]" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full h-[16%]">
+                        <div class="w-full h-[40%] flex items-end justify-start mt-[2vh]">
+                            <h2 style="font-family: sf-pro-rounded-bold; color: rgba(0, 0, 0, 0.62); font-size: 1vw; text-indent: 0.7vw">{{locales.TOTAL_PRICE}}</h2>
+                        </div>
+                        <div class="w-full h-[40%] flex items-end justify-start">
+                            <h2 :style="{'color': this.$store.state.lossantosPage.currentThema === 'white' ? 'black' : this.$store.state.lossantosPage.currentColor[this.$store.state.lossantosPage.currentThema]}" style="font-family: sf-pro-rounded-bold; font-size: 1.7vw; text-indent: 0.7vw">{{totalPriceVehicleBasket}} $</h2>
+                        </div>
+                    </div>
+                </div>
+            </transition>
+            <div class="w-[88%] h-[60%] flex items-end justify-center" style="overflow: hidden">
+                <transition name="stanceMenu">
+                    <component v-if="!summaryModal" :is="currentComponent"></component>
+                </transition>
+            </div>
+            <div class="w-[88%] h-[17.5%] flex items-end justify-center">
+                <div v-if="!summaryModal && !billModal" class="w-full h-[92%]" :style="{'background-image': 'url(./images/' + this.$store.state.lossantosPage.currentThema + '/infopricelogo.png)'}" style="background-size: 100% 100%">
+                    <div class="w-full h-[30%] flex items-end justify-start">
+                        <h2 style="font-family: sf-pro-rounded-bold; color: white; text-indent: 1vw; font-size: 1vw">{{locales.TOTAL_PRICE}}</h2>
+                    </div>
+                    <div class="w-full h-[40%] flex items-center justify-start">
+                        <h2 style="font-family: sf-pro-rounded-bold; text-indent: 1vw; font-size: 1.8vw" :style="{'color' : this.$store.state.lossantosPage.currentColor[this.$store.state.lossantosPage.currentThema]}">{{totalPriceVehicleBasket}} $</h2>
+                    </div>
+                    <div class="w-full h-[30%] flex items-end justify-start">
+                        <div class="w-[50%] h-full flex items-center justify-start">
+                            <h2 style="font-family: sf-pro-rounded-bold; text-indent: 1vw; color: white; font-size: 0.8vw">{{locales.VIEW_SUMMARY}}</h2>
+                        </div>
+                        <div class="w-[45%] h-full flex items-center justify-end">
+                            <img src="./images/purple/upicon.png" class="h-[60%] cursor-pointer" style="transform: rotate(180deg)" @click="openSummaryModal(true)" alt="" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-if="showBillPlayer" class="w-[88%] h-[6.7%] flex items-end justify-center">
+                <div class="w-full h-[73%] flex" :style="{'background-image': 'url(./images/' + this.$store.state.lossantosPage.currentThema + '/bill.png)'}" style="background-size: 100% 100%">
+                    <div class="w-[86%] h-full flex items-center justify-start">
+                        <h2 style="font-family: sf-pro-rounded-bold; color: black; font-size: 1vw; text-indent: 0.7vw">{{locales.BILL_PLAYER}}</h2>
+                    </div>
+                    <div class="w-[14%] h-full cursor-pointer flex items-center justify-center" @click="openBillModal(true)">
+                        <img src="./images/purple/bill-click-icon.png" class="h-[40%] mb-[.1042vw]" />
+                    </div>
+                </div>
+            </div>
+            <div class="w-[88%] h-[11%] flex items-end justify-center">
+                <div class="w-full h-[83%] flex items-center justify-center cursor-pointer" @click="paynowButton" :style="{'background-image': 'url(./images/' + this.$store.state.lossantosPage.currentThema + '/dropbutton.png)'}" style="background-size: 100% 100%">
+                    <h2 :style="{'color' : this.$store.state.lossantosPage.currentColor[this.$store.state.lossantosPage.currentThema]}" style="font-family: sf-pro-rounded-bold; font-size: 1.8vw; font-weight: 800">{{locales.PAY_NOW}}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

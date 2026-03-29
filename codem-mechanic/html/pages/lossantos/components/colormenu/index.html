@@ -1,0 +1,66 @@
+<div
+    class="w-full h-[92%]"
+    :style="{'background-image': 'url(./images/' + this.$store.state.lossantosPage.currentThema + '/info.png)'}"
+    style="background-size: 100% 100%"
+>
+    <div class="w-full h-[11%] flex items-center justify-start">
+        <div class="w-full h-full flex items-center justify-start flex">
+            <div class="w-[50%] h-full flex items-center justify-center cursor-pointer">
+                <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 1vw">{{locales.COLOR}}</h2>
+            </div>
+            <div class="w-[50%] h-full flex items-center justify-start cursor-pointer" @click="closeColorMenu">
+                <h2 style="font-family: sf-pro-rounded-bold; color: rgba(255, 255, 255, 0.12); font-size: 1vw">{{locales.VEHICLE_SPEC}}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="w-full h-[89%] flex-wrap flex items-start content-start justify-start">
+        <div class="w-full h-full flex items-start justify-center flex-wrap content-start no-scrollbar" style="overflow: auto">
+            <div
+                class="w-[90%] h-[20%] mt-[0.2vh] flex flex-wrap items-center justify-center"
+                v-for="(category,categoryName) in selectedData"
+                :key="categoryName"
+            >
+                <div class="w-full h-full flex items-center justify-start flex-wrap">
+                    <div class="w-full h-[20%] flex items-center justify-start">
+                        <h2 style="font-family: sf-pro-rounded-bold; color: rgba(255, 255, 255, 0.22); font-size: 0.7vw">
+                            {{category.label}} ({{category.colors.length}} {{locales.COLORS}})
+                        </h2>
+                    </div>
+                    <div class="w-full h-[45%] flex justify-between">
+                        <div
+                            :class="`backColorBtn-${categoryName}`"
+                            class="w-[20%] h-full flex items-center justify-center cursor-pointer"
+                            style="background-color: rgba(0, 0, 0, 0.24); border-top-left-radius: 0.5vw; border-bottom-left-radius: 0.5vw"
+                        >
+                            <img style="transform: rotate(180deg)" class="h-[35%]" src="./images/right.png" alt="" />
+                        </div>
+                        <div :ref="`colorSwiper-${categoryName}`" id="colorSwiper" class="swiper-container w-[58%] h-full" style="overflow: hidden">
+                            <div class="swiper-wrapper">
+                                <div
+                                    v-for="color in category.colors"
+                                    :key="color.index"
+                                    class="swiper-slide w-full h-full flex relative justify-between"
+                                >
+                                    <div
+                                        @click="allColorChange(color.index)"
+                                        class="w-full h-full flex items-center justify-center cursor-pointer"
+                                        style="background-color: rgba(0, 0, 0, 0.24)"
+                                    >
+                                        <h2 style="font-family: sf-pro-rounded-bold; color: white; font-size: 0.8vw">{{color.label}}</h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            :class="`nextColorBtn-${categoryName}`"
+                            class="nextColorBtn w-[20%] h-full flex items-center justify-center cursor-pointer"
+                            style="background-color: rgba(0, 0, 0, 0.24); border-top-right-radius: 0.5vw; border-bottom-right-radius: 0.5vw"
+                        >
+                            <img class="h-[35%]" src="./images/right.png" alt="" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

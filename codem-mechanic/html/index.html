@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"
+            integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        />
+        <script src="./js/vue.global.js"></script>
+        <script src="./js/vuex.global.js"></script>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="./css/style.css" />
+        <link rel="stylesheet" href="./css/responsive.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+        <title>Codem Mechanic</title>
+    </head>
+
+    <body>
+        <div id="app" style="display: none;">
+            <div class="w-full h-[100vh]">
+                <div v-if="this.$store.state.activePage == 'freecam'" class="w-full h-full flex items-center justify-center">
+                    <div
+                        class="w-[13%] h-[3.5%] right-[1vw] top-[5vh] absolute flex items-center justify-start"
+                        :style="{'background-image': 'url(./images/' + this.$store.state.lossantosPage.currentThema + '/freecam.png)'}"
+                        style="background-size: 100% 100%"
+                    >
+                        <h2
+                            v-html="locales.EXIT"
+                            style="font-family: sf-pro-rounded-bold; font-size: 0.8vw; color: rgba(255, 255, 255, 0.72); text-indent: 1vw"
+                        ></h2>
+                    </div>
+                </div>
+
+                <div v-if="progressbar > 0" class="w-[25%] h-[10%] absolute bottom-[10vh] left-[40%]">
+                    <div class="w-full h-[40%] flex items-end justify-start">
+                        <h2 style="font-family: sf-pro-rounded-medium; font-size: 0.7vw; color: white">{{progressbarLabel}}</h2>
+                    </div>
+                    <div class="w-full h-[10%] flex items-center justify-start rounded-[0.5vw]" style="background-color: rgba(0, 0, 0, 0.65)">
+                        <div
+                            class="h-full rounded-[0.5vw]"
+                            :style="{'width' : progressbar + '%'}"
+                            style="background-color: #bc84ff; transition: 1.3s all"
+                        ></div>
+                    </div>
+                </div>
+
+                <div v-if="otherSummuryBill" class="w-full h-full flex items-center justify-end" style="background-color: rgba(0, 0, 0, 0.72)">
+                    <div class="w-[19%] h-[74%] flex items-start justify-start flex-wrap">
+                        <div
+                            class="w-[86%] h-[90.5%]"
+                            :style="{'background-image': 'url(./images/' + this.$store.state.lossantosPage.currentThema + '/freecam.png)'}"
+                            style="background-size: 100% 100%"
+                        >
+                            <div class="w-full h-[8%] flex items-center justify-start">
+                                <h2 class="" style="font-family: sf-pro-rounded-medium; font-size: 1vw; color: #dfc3ff; text-indent: 2vw">
+                                    {{locales.BILL_SUMMARY}}
+                                </h2>
+                            </div>
+                            <div class="w-full h-[76%] flex items-center justify-center">
+                                <div class="w-[90%] h-full no-scrollbar" style="overflow: auto">
+                                    <div v-for="data in otherSummuryBill.basketList" class="w-full h-[5%] flex items-center justify-between">
+                                        <h2 class="" style="font-family: sf-pro-rounded-medium; font-size: 0.7vw; color: white">
+                                            {{data.label}}-{{data.index}}
+                                        </h2>
+                                        <h2 class="" style="font-family: sf-pro-rounded-medium; font-size: 0.7vw; color: white">${{data.price}}</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="w-full h-[16%] flex items-start justify-start flex-col">
+                                <h2 class="mt-[2vh]" style="font-family: sf-pro-rounded-medium; font-size: 0.7vw; color: white; text-indent: 1vw">
+                                    {{locales.TOTAL_PRICE}}
+                                </h2>
+
+                                <h2
+                                    :style="{'color' : this.$store.state.lossantosPage.currentColor[this.$store.state.lossantosPage.currentThema]}"
+                                    style="font-family: sf-pro-rounded-bold; font-size: 1.7vw; text-indent: 0.7vw"
+                                >
+                                    $ {{otherSummuryBill.totalPrice}}
+                                </h2>
+                            </div>
+                        </div>
+                        <div
+                            class="w-[86%] h-[6%] rounded-[0.2vw] flex items-center justify-center cursor-pointer"
+                            @click="closeOtherSummuryBill"
+                            style="background: linear-gradient(90deg, #bc84ff 0%, #e0c6ff 100%), #d9d9d9"
+                        >
+                            <h2
+                                :style="{'color' : this.$store.state.lossantosPage.currentColor[this.$store.state.lossantosPage.currentThema]}"
+                                style="font-family: sf-pro-rounded-bold; font-size: 1vw; text-indent: 0.7vw"
+                            >
+                                {{locales.CLOSE_BILL}}
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full h-[50%] absolute text-white flex flex-col items-center justify-start">
+                    <transition-group name="fade">
+                        <div
+                            class="w-[22%] h-[14%] relative mt-[9vh] flex items-start justify-center flex-wrap"
+                            :style="{'background-image': 'url(./images/' + this.$store.state.lossantosPage.currentThema + '/notification.png)'}"
+                            style="z-index: 2222; background-size: 100% 100%"
+                            v-for="notification in notifications"
+                            :key="notification.id"
+                        >
+                            <div class="w-full h-[50%] flex items-end justify-start">
+                                <h2 class="" style="font-family: sf-pro-rounded-medium; font-size: 0.7vw; color: #ff9c65; text-indent: 2vw">
+                                    {{locales.NOTIFICATION}}
+                                </h2>
+                            </div>
+                            <div class="w-full h-[50%] flex items-center justify-start">
+                                <h2 class="" style="font-family: sf-pro-rounded-medium; font-size: 0.7vw; color: white; text-indent: 2vw">
+                                    {{notification.text}}
+                                </h2>
+                            </div>
+                        </div>
+                    </transition-group>
+                </div>
+                <div
+                    v-if="this.$store.state.activePage == 'areusure'"
+                    class="w-full h-full flex items-center justify-center"
+                    style="background-color: rgba(0, 0, 0, 0.72)"
+                >
+                    <div
+                        class="w-[25%] h-[25%]"
+                        :style="{'background-image': 'url(./images/' + this.$store.state.lossantosPage.currentThema + '/areusure.png)'}"
+                        style="background-size: 100% 100%"
+                    >
+                        <div class="w-full h-[20%] flex items-center justify-center">
+                            <div class="w-[90%] h-full flex items-center">
+                                <h2 style="font-family: sf-pro-rounded-bold; font-size: 0.8vw; color: #ff9c65">{{locales.WARNING_TITLE}}</h2>
+                            </div>
+                        </div>
+                        <div class="w-[90%] h-[40%] flex items-center justify-center">
+                            <div class="w-[90%] h-full flex items-center">
+                                <h2 style="font-family: sf-pro-rounded-bold; font-size: 0.8vw; color: white">{{locales.WARNING_MESSAGE}}</h2>
+                            </div>
+                        </div>
+                        <div class="w-full h-[22%] flex items-center justify-start">
+                            <div class="w-[58%] h-full flex items-center flex items-center justify-end">
+                                <div class="w-[77%] h-full flex items-center justify-center cursor-pointer" @click="closeMenu(true)">
+                                    <h2 style="font-family: sf-pro-rounded-bold; font-size: 0.9vw; color: white">{{locales.YES}}</h2>
+                                </div>
+                            </div>
+                            <div class="w-[32%] h-full flex items-center flex items-center justify-end">
+                                <div class="w-[68%] h-full flex items-center justify-center cursor-pointer" @click="closeMenu(false)">
+                                    <h2 style="font-family: sf-pro-rounded-bold; font-size: 0.9vw; color: white">X</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- <input type="text" class="special-color-fields" @click="openColoris" data-coloris />  -->
+                <component v-if="activePage" :is="activePage"></component>
+            </div>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.1.1/howler.min.js" type="text/javascript"></script>
+        <!-- <script src="nui://game/ui/jquery.js" type="text/javascript"></script>
+        <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
+        <script src="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.js"></script>
+
+        <script src="./js/app.js" type="module"></script>
+    </body>
+</html>
