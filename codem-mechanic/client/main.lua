@@ -221,13 +221,14 @@ function openMenu(menuType, menuLabel)
     end
 
     if "mechanic" == menuType then
-        local pedInDriverSeat = GetPedInVehicleSeat(GetVehiclePedIsIn(PlayerPedId(), false), -1)
-        if pedInDriverSeat ~= PlayerPedId() then
+        local vehicle = GetVehiclePedIsIn(PlayerPedId(), false)
+        if tonumber(vehicle) == 0 then
+            TriggerEvent("codem-mechanic:notification", Config.Locales.CANT_MODIFY)
             return
         end
 
         lastMenuLabel = menuLabel
-        playerVeh = GetVehiclePedIsIn(PlayerPedId(), false)
+        playerVeh = vehicle
 
         local vehicleModelName = GetDisplayNameFromVehicleModel(GetEntityModel(playerVeh))
         local lowerVehicleModelName = vehicleModelName.lower(vehicleModelName)
