@@ -1,10 +1,29 @@
 local moduleData = {}
 moduleData.Avatars = {}
+local registeredCallbacks = {}
 
 offSetData = {}
 
 local registerServerEvent = RegisterServerEvent
 local triggerClientEvent = TriggerClientEvent
+
+function RegisterCallback(name, cb)
+    registeredCallbacks[name] = cb
+end
+
+registerServerEvent("codem-mechanic:triggerServerCallback")
+AddEventHandler("codem-mechanic:triggerServerCallback", function(name, requestId, ...)
+    local src = source
+    local callback = registeredCallbacks[name]
+    if not callback then
+        triggerClientEvent("codem-mechanic:serverCallback", src, requestId, nil)
+        return
+    end
+
+    callback(src, function(...)
+        triggerClientEvent("codem-mechanic:serverCallback", src, requestId, ...)
+    end, ...)
+end)
 
 local function handleShowOtherBill(billData)
     local targetPlayerId = tonumber(billData.plyid)

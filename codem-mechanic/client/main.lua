@@ -8,6 +8,8 @@ local nuiCallbackTableUtils
 local nuiCallbackListContains
 local nuiCallbackGetNearbyPlayers
 local nuiCallbackJobSuccesMoney
+local callbackRequestId = 0
+local pendingCallbacks = {}
 
 openMenuDrawText = false
 nuiLoaded = false
@@ -15,6 +17,38 @@ playerVeh = nil
 oldDataVehicle = false
 key = false
 lastMenuLabel = false
+
+RegisterNetEvent("codem-mechanic:serverCallback")
+AddEventHandler("codem-mechanic:serverCallback", function(requestId, ...)
+    if pendingCallbacks[requestId] then
+        pendingCallbacks[requestId](...)
+        pendingCallbacks[requestId] = nil
+    end
+end)
+
+function TriggerCallback(name, ...)
+    callbackRequestId = callbackRequestId + 1
+    local requestId = callbackRequestId
+    local completed = false
+    local response = nil
+
+    pendingCallbacks[requestId] = function(...)
+        response = { ... }
+        completed = true
+    end
+
+    TriggerServerEvent("codem-mechanic:triggerServerCallback", name, requestId, ...)
+
+    while not completed do
+        Wait(0)
+    end
+
+    if not response or #response == 0 then
+        return nil
+    end
+
+    return table.unpack(response)
+end
 
 function sendNuiMessage(action, payload)
     while true do
