@@ -141,31 +141,6 @@ Config.OpenTrigger = function()
                             end
                         end
                     end
-                    if Config.MechanicMode == 'only_job' or CheckCanUseMechanic(getNearestMechanic()) then
-                        for _, v in pairs(mechanic.bossMenuCoords) do
-                            local distance = #(pedCoords - v)
-
-                            if distance < 3.0 then
-                                wait = 0
-
-                                -- if not openMenuDrawText then
-                                DrawMarker(2, v.x, v.y,
-                                    v.z + 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15, 255,
-                                    255,
-                                    255,
-                                    255,
-                                    false, false, false, true, false, false, false)
-                                DrawText3D(v.x, v.y,
-                                    v.z + 0.3,
-                                    mechanic.bossMenuLabel)
-                                --end
-
-                                if IsControlJustPressed(0, 38) and CheckPermission('accessBossMenu') then
-                                    openMenu('boss', mechanic.label)
-                                end
-                            end
-                        end
-                    end
                 end
                 Citizen.Wait(wait)
             end
@@ -173,35 +148,6 @@ Config.OpenTrigger = function()
     elseif Config.InteractionHandler == "qb-target" then
         local existData = {}
 
-        RegisterNetEvent("codem-mechanic:AddZone")
-        AddEventHandler("codem-mechanic:AddZone", function(coords, mechanic)
-            if existData["mechaniccodem"] then
-                return
-            end
-            existData["mechaniccodem"] = true
-            exports['qb-target']:AddBoxZone("mechaniccodem", coords, 1.5, 1.6,
-                {
-                    name = "mechaniccodem",
-                    heading = 12.0,
-                    debugPoly = false,
-                    minZ = coords.z - 1,
-                    maxZ = coords.z + 1,
-                }, {
-                    options = {
-                        {
-                            num = 1,
-                            type = "client",
-                            icon = 'fas fa-gears',
-                            label = mechanic.bossMenuLabel,
-                            targeticon = 'fas fa-gears',
-                            action = function()
-                                openMenu('boss', mechanic.label)
-                            end
-                        }
-                    },
-                    distance = 2.5,
-                })
-        end)
         RegisterNetEvent("codem-mechanic:AddZoneMechanic")
         AddEventHandler("codem-mechanic:AddZoneMechanic", function(coords, mechanic)
             local rand = math.random(1, 1000)

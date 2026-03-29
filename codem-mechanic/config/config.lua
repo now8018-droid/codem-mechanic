@@ -11,9 +11,9 @@ Config.ModifyWithYourCash = true      -- Modifications are not deducted from the
 Config.MoneyType = 'bank'              -- cash or bank
 --[[
     - no_job
-    everyone can access mechanic menu and bossmenu will disable
+    everyone can access mechanic menu
     - only_job
-    only mechanic jobs you defined can access the mechanic menu and bossmenu will be useable
+    only mechanic jobs you defined can access the mechanic menu
     - half_job
     if there is no mechanic other players can use the mechanic menu
 ]]
@@ -61,10 +61,6 @@ Config.MechanicSettings = {
         mechanicMenuCoords = {
             vector3(-211.58, -1324.24, 30.47),
         },
-        bossMenuCoords = {
-            vector3(-200.97, -1318.24, 31.09),
-        },
-        bossMenuLabel = "Open Boss Menu",
         mechanicMenuLabel = "Open Mechanic Menu",
         bossGradeLevel = 4,
         blipSettings = {
@@ -83,10 +79,6 @@ Config.MechanicSettings = {
             vector3(-338.83, -136.86, 38.59),
             vector3(-325.13, -134.0, 38.57)
         },
-        bossMenuCoords = {
-            vector3(-347.12, -133.3, 39.01)
-        },
-        bossMenuLabel = "Open Boss Menu",
         mechanicMenuLabel = "Open Mechanic Menu",
         bossGradeLevel = 4,
         blipSettings = {

@@ -1,5 +1,26 @@
 jobs = {}
 
+function GetOnlineMechanicEmployees(name)
+    local employees = {}
+    local players = GetPlayers()
+    for _, playerId in pairs(players) do
+        local job = GetJob(tonumber(playerId))
+        if job == name then
+            table.insert(employees, tonumber(playerId))
+        end
+    end
+    return employees
+end
+
+function AddLog(name, message)
+    -- removed manager menu: keep no-op function for compatibility with mechanic flow
+end
+
+function CheckPermission(src, name)
+    -- removed manager menu: always allow remaining internal checks
+    return true
+end
+
 RegisterServerEvent('codem-mechanic:billPlayer', function(data)
     local src = source
     local identifier = GetIdentifier(src)
@@ -264,7 +285,6 @@ RegisterServerEvent('codem-mechanic:vehicleMechanicComplete', function(data)
                         local newAccountMoney = tonumber(account.money) - tonumber(data)
                         for _, v in pairs(players) do
                             TriggerClientEvent("codem-mechanic:RefreshMechanicVault", tonumber(v), newAccountMoney)
-                            TriggerClientEvent("codem-mechanic:RefreshBossMoney", v)
                         end
                         TriggerClientEvent('codem-mechanic:completeVehicle', src)
                     end
@@ -306,7 +326,6 @@ RegisterServerEvent('codem-mechanic:vehicleMechanicComplete', function(data)
                             local newAccountMoney = tonumber(account.money) - tonumber(data)
                             for _, v in pairs(players) do
                                 TriggerClientEvent("codem-mechanic:RefreshMechanicVault", tonumber(v), newAccountMoney)
-                                TriggerClientEvent("codem-mechanic:RefreshBossMoney", v)
                             end
                             TriggerClientEvent('codem-mechanic:completeVehicle', src)
                         end
@@ -346,7 +365,6 @@ RegisterServerEvent('codem-mechanic:vehicleMechanicComplete', function(data)
                         local newAccountMoney = exports["qb-banking"]:GetAccount(job)
                         for _, v in pairs(players) do
                             TriggerClientEvent("codem-mechanic:RefreshMechanicVault", tonumber(v), newAccountMoney.account_balance)
-                            TriggerClientEvent("codem-mechanic:RefreshBossMoney", v)
                         end
                         TriggerClientEvent('codem-mechanic:completeVehicle', src)
                     end
@@ -365,7 +383,6 @@ RegisterServerEvent('codem-mechanic:vehicleMechanicComplete', function(data)
                             local newAccountMoney = exports["qb-management"]:GetAccount(job)
                             for _, v in pairs(players) do
                                 TriggerClientEvent("codem-mechanic:RefreshMechanicVault", tonumber(v), newAccountMoney)
-                                TriggerClientEvent("codem-mechanic:RefreshBossMoney", v)
                             end
                             TriggerClientEvent('codem-mechanic:completeVehicle', src)
                         end
@@ -403,7 +420,6 @@ RegisterServerEvent('codem-mechanic:vehicleMechanicComplete', function(data)
                             local newAccountMoney = exports["qb-banking"]:GetAccount(job)
                             for _, v in pairs(players) do
                                 TriggerClientEvent("codem-mechanic:RefreshMechanicVault", tonumber(v), newAccountMoney.account_balance)
-                                TriggerClientEvent("codem-mechanic:RefreshBossMoney", v)
                             end
                             TriggerClientEvent('codem-mechanic:completeVehicle', src)
                         end
@@ -422,7 +438,6 @@ RegisterServerEvent('codem-mechanic:vehicleMechanicComplete', function(data)
                                 local newAccountMoney = exports["qb-management"]:GetAccount(job)
                                 for _, v in pairs(players) do
                                     TriggerClientEvent("codem-mechanic:RefreshMechanicVault", tonumber(v), newAccountMoney)
-                                    TriggerClientEvent("codem-mechanic:RefreshBossMoney", v)
                                 end
                                 TriggerClientEvent('codem-mechanic:completeVehicle', src)
                             end
@@ -454,276 +469,5 @@ CreateThread(function()
     RegisterCallback('codem-mechanic:GetPlayerInventory', function(source, cb)
         cb(GetPlayerInventory(source))
     end)
-    RegisterCallback('codem-mechanic:GetLogs', function(source, cb)
-        local job = GetJob(source)
-        local data = {}
-        local mechanic = GetMechanicDataByName(job)
-        if mechanic then
-            data = GetMechanicLogs(job)
-        end
-        cb(data)
-    end)
-    RegisterCallback('codem-mechanic:GetBossInventory', function(source, cb, name)
-        local mechanic = GetMechanicDataByName(name)
-        if mechanic then
-            cb(mechanic.inventory)
-        else
-            cb({})
-        end
-    end)
-
-    RegisterCallback('codem-mechanic:GetEmployees', function(source, cb)
-        local job = GetJob(source)
-        local mechanic = GetMechanicDataByName(job)
-        if mechanic then
-            cb(mechanic.employees)
-        else
-            cb({})
-        end
-    end)
-
-    RegisterCallback('codem-mechanic:GetBossMoney', function(source, cb)
-        local job = GetJob(source)
-        local mechanic = GetMechanicDataByName(job)
-        local money = false
-        if mechanic then
-            if Config.Framework == 'esx' or Config.Framework == 'oldesx' then
-                TriggerEvent("esx_addonaccount:getSharedAccount", 'society_' .. job, function(account)
-                    money = account.money
-                end)
-            else
-                if Config.UseCodemXBossMenu then
-                    if GetResourceState('cdm-xboss') == 'missing' then
-                        print("you either changed the resource name or you don't have the cdm-xboss")
-                        money = 0
-                    else
-                        money = exports["cdm-xboss"]:getSocietyMoney(source)
-                    end
-                else
-                    if Config.newManagementSystem then
-                        local account_money = exports["qb-banking"]:GetAccount(job)
-                        if account_money and account_money.account_balance then
-                            money = account_money.account_balance
-                        else
-                            if Config.CreateJobAccount then
-                                exports["qb-banking"]:CreateJobAccount(job, 0)
-                                money = 0
-                            end
-                        end
-                    else
-                        if GetResourceState('qb-management') ~= 'missing' then
-                            if not doesExportExistInResource("qb-management", "GetAccount") then
-                                print('qb-management does not have GetAccount export')
-                                return
-                            end
-
-                            local account_money = exports["qb-management"]:GetAccount(job)
-                            money = account_money
-                        end
-                    end
-                end
-            end
-        else
-            money = 0
-        end
-        while money == false do
-            Wait(0)
-        end
-        cb(money)
-    end)
-    RegisterCallback('codem-mechanic:GetJobRanks', function(source, cb)
-        cb(GetJobRanks(source))
-    end)
 end)
 
-
-RegisterServerEvent("codem-mechanic:WithdrawMoney")
-AddEventHandler("codem-mechanic:WithdrawMoney", function(amount)
-    local src = source
-    if tonumber(amount) == nil then return end
-    local job, grade = GetJob(src)
-    local mechanic = Config.MechanicSettings[job]
-    if mechanic then
-        if CheckPermission(src, 'accessVault') then
-            if Config.Framework == 'esx' or Config.Framework == 'oldesx' then
-                if Config.UseCodemXBossMenu then
-                    if GetResourceState('cdm-xboss') == 'missing' then
-                        print("you either changed the resource name or you don't have the cdm-xboss")
-                        return
-                    end
-                    local account_money = exports["cdm-xboss"]:getSocietyMoney(src) 
-
-                    if account_money >= amount then  
-                        exports["cdm-xboss"]:WithdrawMoney(src, amount)            
-                        AddLog(job, string.format(Config.Locales.WITHDRAW_MONEY, GetName(src), amount))
-    
-                        Wait(350)
-                        local players = GetOnlineMechanicEmployees(job)
-                        for _, v in pairs(players) do
-                            TriggerClientEvent("codem-mechanic:RefreshBossMoney", v)
-                        end
-                    end
-                else
-                    TriggerEvent("esx_addonaccount:getSharedAccount", 'society_' .. job, function(account)
-                        if account.money >= amount then
-                            account.removeMoney(amount)
-                            AddMoney(src, amount)
-                            AddLog(job, string.format(Config.Locales.WITHDRAW_MONEY, GetName(src), amount))
-    
-                            Wait(350)
-                            local players = GetOnlineMechanicEmployees(job)
-                            for _, v in pairs(players) do
-                                TriggerClientEvent("codem-mechanic:RefreshBossMoney", v)
-                            end
-                        end
-                    end)
-                end
-            else
-                if Config.UseCodemXBossMenu then
-                    if GetResourceState('cdm-xboss') == 'missing' then
-                        print("you either changed the resource name or you don't have the cdm-xboss")
-                        return
-                    end
-                    local account_money = exports["cdm-xboss"]:getSocietyMoney(src) 
-                    if account_money >= amount then                   
-                        exports["cdm-xboss"]:WithdrawMoney(src, amount)            
-
-                        AddLog(job, string.format(Config.Locales.WITHDRAW_MONEY, GetName(src), amount))
-    
-                        Wait(350)
-                        local players = GetOnlineMechanicEmployees(job)
-                        for _, v in pairs(players) do
-                            TriggerClientEvent("codem-mechanic:RefreshBossMoney", v)
-                        end
-                    end
-                else
-                    if Config.newManagementSystem then
-                        local account_money = exports["qb-banking"]:GetAccount(job)
-                        if account_money.account_balance >= amount then
-                            exports["qb-banking"]:RemoveMoney(job, amount)
-                            AddMoney(src, amount)
-                            AddLog(job, string.format(Config.Locales.WITHDRAW_MONEY, GetName(src), amount))
-                            Wait(350)
-                            local players = GetOnlineMechanicEmployees(job)
-                            for _, v in pairs(players) do
-                                TriggerClientEvent("codem-mechanic:RefreshBossMoney", v)
-                            end
-                        end
-                    else
-                        if GetResourceState('qb-management') ~= 'missing' then
-                            if not doesExportExistInResource("qb-management", "GetAccount") or not doesExportExistInResource("qb-management", "RemoveMoney") then
-                                print('qb-management does not have GetAccount export')
-                                return
-                            end
-
-                            local account_money = exports["qb-management"]:GetAccount(job)
-                            if account_money >= amount then
-                                exports["qb-management"]:RemoveMoney(job, amount)
-                                AddMoney(src, amount)
-                                AddLog(job, string.format(Config.Locales.WITHDRAW_MONEY, GetName(src), amount))
-                                Wait(350)
-                                local players = GetOnlineMechanicEmployees(job)
-                                for _, v in pairs(players) do
-                                    TriggerClientEvent("codem-mechanic:RefreshBossMoney", v)
-                                end
-                            end
-                        end
-                    end
-                end
-            end
-        end
-    end
-end)
-
-
-RegisterServerEvent("codem-mechanic:DepositMoney")
-AddEventHandler("codem-mechanic:DepositMoney", function(amount)
-    local src = source
-    local Player = GetPlayer(sdrc)
-
-    if tonumber(amount) == nil then return end
-    local job, grade = GetJob(src)
-    local mechanic = Config.MechanicSettings[job]
-    if mechanic then
-        if CheckPermission(src, 'accessVault') then
-            if Config.Framework == 'esx' or Config.Framework == 'oldesx' then
-                if Config.UseCodemXBossMenu then
-                    if GetResourceState('cdm-xboss') == 'missing' then
-                        print("you either changed the resource name or you don't have the cdm-xboss")
-                        return
-                    end
-                    if Player.getMoney() >= amount then    
-                        exports["cdm-xboss"]:DepositMoney(src, amount)            
-                        AddLog(job, string.format(Config.Locales.DEPOSIT_MONEY, GetName(src), amount))
-    
-                        Wait(350)
-                        local players = GetOnlineMechanicEmployees(job)
-                        for _, v in pairs(players) do
-                            TriggerClientEvent("codem-mechanic:RefreshBossMoney", v)
-                        end
-                    end
-                else
-                    TriggerEvent("esx_addonaccount:getSharedAccount", 'society_' .. job, function(account)
-                        if RemoveMoney(src, amount) then
-                            account.addMoney(amount)
-                            AddLog(job, string.format(Config.Locales.DEPOSIT_MONEY, GetName(src), amount))
-                            Wait(350)
-                            local players = GetOnlineMechanicEmployees(job)
-                            for _, v in pairs(players) do
-                                TriggerClientEvent("codem-mechanic:RefreshBossMoney", v)
-                            end
-                        end
-                    end)
-                end
-            else
-                if Config.UseCodemXBossMenu then
-                    if GetResourceState('cdm-xboss') == 'missing' then
-                        print("you either changed the resource name or you don't have the cdm-xboss")
-                        return
-                    end
-                    if Player.Functions.GetMoney('cash')  >= amount then    
-                        exports["cdm-xboss"]:DepositMoney(src, amount)            
-                        AddLog(job, string.format(Config.Locales.DEPOSIT_MONEY, GetName(src), amount))
-    
-                        Wait(350)
-                        local players = GetOnlineMechanicEmployees(job)
-                        for _, v in pairs(players) do
-                            TriggerClientEvent("codem-mechanic:RefreshBossMoney", v)
-                        end
-                    end
-                else
-                    if Config.newManagementSystem then
-                        if RemoveMoney(src, amount) then
-                            exports["qb-banking"]:AddMoney(job, amount)
-                            AddLog(job, string.format(Config.Locales.DEPOSIT_MONEY, GetName(src), amount))
-                            Wait(350)
-                            local players = GetOnlineMechanicEmployees(job)
-                            for _, v in pairs(players) do
-                                TriggerClientEvent("codem-mechanic:RefreshBossMoney", v)
-                            end
-                        end
-                    else
-                        if GetResourceState('qb-management') ~= 'missing' then
-                            if not doesExportExistInResource("qb-management", "AddMoney") then
-                                print('qb-management does not have GetAccount export')
-                                return
-                            end
-                            
-                            if RemoveMoney(src, amount) then
-
-                                exports["qb-management"]:AddMoney(job, amount)
-                                AddLog(job, string.format(Config.Locales.DEPOSIT_MONEY, GetName(src), amount))
-        
-                                Wait(350)
-                                local players = GetOnlineMechanicEmployees(job)
-                                for _, v in pairs(players) do
-                                    TriggerClientEvent("codem-mechanic:RefreshBossMoney", v)
-                                end
-                            end
-                        end
-                    end
-                end
-            end
-        end
-    end
-end)

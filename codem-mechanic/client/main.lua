@@ -8,6 +8,13 @@ local nuiCallbackTableUtils
 local nuiCallbackListContains
 local nuiCallbackGetNearbyPlayers
 local nuiCallbackJobSuccesMoney
+local callbackRequestId = 0
+local pendingCallbacks = {}
+
+Core = nil
+job = ""
+job_grade_level = 0
+job_grade_name = ""
 
 openMenuDrawText = false
 nuiLoaded = false
@@ -15,6 +22,99 @@ playerVeh = nil
 oldDataVehicle = false
 key = false
 lastMenuLabel = false
+
+RegisterNetEvent("codem-mechanic:serverCallback")
+AddEventHandler("codem-mechanic:serverCallback", function(requestId, ...)
+    if pendingCallbacks[requestId] then
+        pendingCallbacks[requestId](...)
+        pendingCallbacks[requestId] = nil
+    end
+end)
+
+function TriggerCallback(name, ...)
+    callbackRequestId = callbackRequestId + 1
+    local requestId = callbackRequestId
+    local completed = false
+    local response = nil
+
+    pendingCallbacks[requestId] = function(...)
+        response = { ... }
+        completed = true
+    end
+
+    TriggerServerEvent("codem-mechanic:triggerServerCallback", name, requestId, ...)
+
+    while not completed do
+        Wait(0)
+    end
+
+    if not response or #response == 0 then
+        return nil
+    end
+
+    return table.unpack(response)
+end
+
+local function waitPlayerLoaded()
+    while Core == nil do
+        Wait(0)
+    end
+
+    if Config.Framework == "esx" or Config.Framework == "oldesx" then
+        while Core.GetPlayerData() == nil or Core.GetPlayerData().job == nil do
+            Wait(100)
+        end
+    else
+        while Core.Functions.GetPlayerData() == nil or Core.Functions.GetPlayerData().job == nil do
+            Wait(100)
+        end
+    end
+end
+
+function SetPlayerJob()
+    waitPlayerLoaded()
+
+    if Config.Framework == "esx" or Config.Framework == "oldesx" then
+        local playerData = Core.GetPlayerData()
+        job = playerData.job.name
+        job_grade_level = playerData.job.grade
+        job_grade_name = playerData.job.grade_label
+    else
+        local playerData = Core.Functions.GetPlayerData()
+        job = playerData.job.name
+        job_grade_level = playerData.job.grade.level
+        job_grade_name = playerData.job.grade.name
+    end
+end
+
+CreateThread(function()
+    Core, Config.Framework = GetCore()
+    SetPlayerJob()
+end)
+
+RegisterNetEvent("esx:playerLoaded")
+AddEventHandler("esx:playerLoaded", function()
+    Wait(500)
+    SetPlayerJob()
+end)
+
+RegisterNetEvent("QBCore:Client:OnPlayerLoaded")
+AddEventHandler("QBCore:Client:OnPlayerLoaded", function()
+    Wait(500)
+    SetPlayerJob()
+end)
+
+RegisterNetEvent("esx:setJob")
+AddEventHandler("esx:setJob", function()
+    Wait(250)
+    SetPlayerJob()
+end)
+
+RegisterNetEvent("QBCore:Client:OnJobUpdate")
+AddEventHandler("QBCore:Client:OnJobUpdate", function()
+    Wait(250)
+    SetPlayerJob()
+end)
 
 function sendNuiMessage(action, payload)
     while true do
@@ -30,6 +130,7 @@ function sendNuiMessage(action, payload)
 end
 
 nuiCallbackNuiMessage = sendNuiMessage
+NuiMessage = sendNuiMessage
 
 nuiCallbackCreateThread = CreateThread
 
@@ -87,16 +188,6 @@ function mainThreadFunction()
     if "no_job" == Config.MechanicMode then
         if "ox-target" == Config.InteractionHandler then
             for mechanicName, mechanicData in pairs(Config.MechanicSettings) do
-                for _, coords in pairs(mechanicData.bossMenuCoords) do
-                    TriggerEvent("codem-mechanic:AddZone", coords, "mechanic-boss", {
-                        {
-                            name = "mechanic-boss",
-                            event = "codem-mechanic:OpenBossMenu",
-                            icon = "fa-solid fa-bars-progress",
-                            label = Config.Locales.OPEN_BOSS_MENU
-                        }
-                    })
-                end
                 for _, coords in pairs(mechanicData.mechanicMenuCoords) do
                     TriggerEvent("codem-mechanic:AddZone", coords, "mechanic-tuning-menu", {
                         {
@@ -111,9 +202,6 @@ function mainThreadFunction()
         end
         if "qb-target" == Config.InteractionHandler then
             for mechanicName, mechanicData in pairs(Config.MechanicSettings) do
-                for _, coords in pairs(mechanicData.bossMenuCoords) do
-                    TriggerEvent("codem-mechanic:AddZone", coords, mechanicData)
-                end
                 for _, coords in pairs(mechanicData.mechanicMenuCoords) do
                     TriggerEvent("codem-mechanic:AddZoneMechanic", coords, mechanicData)
                 end
@@ -125,21 +213,6 @@ end
 nuiCallbackCreateThread(mainThreadFunction)
 
 nuiCallbackRegisterNUICallback = RegisterNetEvent
-local NET_EVENT_OPEN_BOSS_MENU = "codem-mechanic:OpenBossMenu"
-nuiCallbackRegisterNUICallback(NET_EVENT_OPEN_BOSS_MENU)
-
-nuiCallbackAddEventHandler = AddEventHandler
-
-function openBossMenuHandler()
-    local jobConfig = Config.MechanicSettings[job]
-    if jobConfig then
-        openMenu("boss", jobConfig.label)
-    end
-end
-
-nuiCallbackAddEventHandler(NET_EVENT_OPEN_BOSS_MENU, openBossMenuHandler)
-
-nuiCallbackRegisterNUICallback = RegisterNetEvent
 local NET_EVENT_OPEN_MECHANIC_MENU = "codem-mechanic:OpenMechanicMenu"
 nuiCallbackRegisterNUICallback(NET_EVENT_OPEN_MECHANIC_MENU)
 
@@ -147,19 +220,13 @@ nuiCallbackAddEventHandler = AddEventHandler
 
 function openMechanicMenuHandler()
     local jobConfig = Config.MechanicSettings[job]
-    if "no_job" ~= Config.MechanicMode then
-        local nearestMechanic, _, _ = getNearestMechanic()
-        if not CheckCanUseMechanic(nearestMechanic) then
-            goto lbl_22
+    if "no_job" == Config.MechanicMode or CheckCanUseMechanic(getNearestMechanic()) then
+        local nearestMechanic = getNearestMechanic()
+        if nearestMechanic then
+            jobConfig = Config.MechanicSettings[nearestMechanic]
         end
     end
 
-    local nearestMechanic = getNearestMechanic()
-    if nearestMechanic then
-        jobConfig = Config.MechanicSettings[nearestMechanic]
-    end
-
-    ::lbl_22::
     if jobConfig then
         openMenu("mechanic", jobConfig.label)
     end
@@ -288,23 +355,6 @@ function openMenu(menuType, menuLabel)
         hideMenuOpen()
         TriggerServerEvent("codem-mechanic:server:StartModity", NetworkGetNetworkIdFromEntity(playerVeh), oldDataVehicle)
 
-    elseif "boss" == menuType then
-        if CheckPermission("accessBossMenu") then
-            local playerAccount = TriggerCallback("codem-mechanic:getAccount")
-            SetNuiFocus(true, true)
-            sendNuiMessage("openmenu", {
-                menu = menuType,
-                profileAccount = playerAccount,
-                mechanicLabel = menuLabel
-            })
-            sendNuiMessage("SET_ITEM_IMAGES_FOLDER", Config.ItemImagesFolder)
-            bossMenuOpen = true
-            local inventory = TriggerCallback("codem-mechanic:GetPlayerInventory")
-            sendNuiMessage("SetInventory", inventory)
-            SetMyRank()
-            TriggerEvent("codem-mechanic:RefreshBossMoney")
-            hideMenuOpen()
-        end
     elseif "jobmenu" == menuType then
         SetNuiFocus(true, true)
         sendNuiMessage("openmenu", {
@@ -345,19 +395,18 @@ function handleVehicleMechanicComplete(totalPrice)
     local playerAccount = TriggerCallback("codem-mechanic:getAccount")
     local currentBalance = mechanicVault
 
+    local canUseNearestMechanic = true
     if "no_job" ~= Config.MechanicMode then
-        local nearestMechanic, _, _ = getNearestMechanic()
-        if not CheckCanUseMechanic(nearestMechanic) then
-            goto lbl_29
-        end
+        local nearestMechanic = getNearestMechanic()
+        canUseNearestMechanic = CheckCanUseMechanic(nearestMechanic)
     end
 
-    local jobConfig = Config.MechanicSettings[job]
-    if jobConfig then
-    else
-        currentBalance = playerAccount.cash
+    if canUseNearestMechanic then
+        local jobConfig = Config.MechanicSettings[job]
+        if not jobConfig then
+            currentBalance = playerAccount.cash
+        end
     end
-    ::lbl_29::
 
     if Config.ModifyWithYourCash then
         local playerCash = TriggerCallback("codem-mechanic:getPlayerAccount")
@@ -1630,7 +1679,6 @@ local NUI_EVENT_CLOSE = "close"
 
 function handleClose()
     openMenuDrawText = false
-    bossMenuOpen = false
     SetNuiFocus(false, false)
     RenderScriptCams(false, true, 500, true, true)
     DestroyCam(mainCam, true)

@@ -1,16 +1,13 @@
 import lossantosModule from "./modules/lossantosModule.js";
-import bossmenuModule from "./modules/bossmenuModule.js";
 import jobmenuModule from "./modules/jobmenuModule.js";
 
 let audioPlayer = null;
 const Modules = {
     lossantosPage: lossantosModule,
-    jobmenuPage: jobmenuModule,
-    bossmenuPage: bossmenuModule
+    jobmenuPage: jobmenuModule
 };
 
 import lossantosPage from "../pages/lossantos/index.js";
-import bossmenuPage from "../pages/bossmenu/index.js";
 import jobmenuPage from "../pages/jobmenu/index.js";
 
 String.prototype.format = function () {
@@ -25,8 +22,7 @@ String.prototype.format = function () {
 const store = Vuex.createStore({
     components: {
         lossantosPage: lossantosPage,
-        jobmenuPage: jobmenuPage,
-        bossmenuPage: bossmenuPage
+        jobmenuPage: jobmenuPage
     },
 
     state: {
@@ -77,8 +73,7 @@ const store = Vuex.createStore({
 const app = Vue.createApp({
     components: {
         lossantosPage: lossantosPage,
-        jobmenuPage: jobmenuPage,
-        bossmenuPage: bossmenuPage
+        jobmenuPage: jobmenuPage
     },
     data: () => ({
         otherSummuryBill: false,
@@ -108,13 +103,6 @@ const app = Vue.createApp({
 
     methods: {
         ...Vuex.mapMutations({
-            setPlayerInventory: "bossmenuPage/setPlayerInventory",
-            setBossInventory: "bossmenuPage/setBossInventory",
-            setItemImagesFolder: "bossmenuPage/setItemImagesFolder",
-            setEmployees: "bossmenuPage/setEmployees",
-            setRanks: "bossmenuPage/setRanks",
-            setMoney: "bossmenuPage/setMoney",
-            setLogs: "bossmenuPage/setLogs",
             setLocales: "setLocales"
         }),
         startProgress(label, time) {
@@ -173,19 +161,12 @@ const app = Vue.createApp({
                         this.$store.state.profileAccount = event.data.payload.profileAccount;
                         this.$store.state.lossantosPage.mechanicVault = event.data.payload.vault;
                         this.$store.state.lossantosPage.mechanicLabel = event.data.payload.mechanicLabel;
-                    } else if (event.data.payload.menu == "boss") {
-                        this.$store.state.activePage = "bossmenuPage";
-                        this.$store.state.profileAccount = event.data.payload.profileAccount;
-                        this.$store.state.lossantosPage.mechanicLabel = event.data.payload.mechanicLabel;
                     } else if (event.data.payload.menu == "jobmenu") {
                         this.$store.state.activePage = "jobmenuPage";
                     }
                     break;
                 case "showProgressBar":
                     this.startProgress(event.data.payload.label, event.data.payload.time);
-                    break;
-                case "UPDATE_LOGS":
-                    this.setLogs(event.data.payload);
                     break;
                 case "configCategoryLocked":
                     this.$store.state.lossantosPage.categoryLocked = event.data.payload;
@@ -213,26 +194,6 @@ const app = Vue.createApp({
                     break;
                 case "SET_NOTIFICATION":
                     this.$store.dispatch("notification", event.data.payload);
-                    break;
-                case "SetInventory":
-                    this.setPlayerInventory(event.data.payload);
-                    break;
-                case "UPDATE_BOSS_INVENTORY":
-                    this.setBossInventory(event.data.payload);
-                    break;
-                case "SET_ITEM_IMAGES_FOLDER":
-                    this.setItemImagesFolder(event.data.payload);
-
-                    break;
-                case "SET_EMPLOYEES":
-                    this.setEmployees(event.data.payload);
-
-                    break;
-                case "SET_RANKS":
-                    this.setRanks(event.data.payload);
-                    break;
-                case "SET_BOSS_MONEY":
-                    this.setMoney(event.data.payload);
                     break;
                 case "SET_LOCALES":
                     this.setLocales(event.data.payload);
