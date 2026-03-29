@@ -147,14 +147,19 @@ nuiCallbackAddEventHandler = AddEventHandler
 
 function openMechanicMenuHandler()
     local jobConfig = Config.MechanicSettings[job]
-    local nearestMechanic = getNearestMechanic()
+    local shouldUseNearestMechanic = true
 
-    if nearestMechanic and (Config.MechanicMode == "no_job" or CheckCanUseMechanic(nearestMechanic)) then
-        jobConfig = Config.MechanicSettings[nearestMechanic]
-    elseif Config.MechanicMode == "no_job" and not jobConfig then
-        for _, mechanicConfig in pairs(Config.MechanicSettings) do
-            jobConfig = mechanicConfig
-            break
+    if "no_job" ~= Config.MechanicMode then
+        local nearestMechanic, _, _ = getNearestMechanic()
+        if not CheckCanUseMechanic(nearestMechanic) then
+            shouldUseNearestMechanic = false
+        end
+    end
+
+    if shouldUseNearestMechanic then
+        local nearestMechanic = getNearestMechanic()
+        if nearestMechanic then
+            jobConfig = Config.MechanicSettings[nearestMechanic]
         end
     end
 
@@ -221,14 +226,13 @@ function openMenu(menuType, menuLabel)
     end
 
     if "mechanic" == menuType then
-        local vehicle = GetVehiclePedIsIn(PlayerPedId(), false)
-        if tonumber(vehicle) == 0 then
-            TriggerEvent("codem-mechanic:notification", Config.Locales.CANT_MODIFY)
+        local pedInDriverSeat = GetPedInVehicleSeat(GetVehiclePedIsIn(PlayerPedId(), false), -1)
+        if pedInDriverSeat ~= PlayerPedId() then
             return
         end
 
         lastMenuLabel = menuLabel
-        playerVeh = vehicle
+        playerVeh = GetVehiclePedIsIn(PlayerPedId(), false)
 
         local vehicleModelName = GetDisplayNameFromVehicleModel(GetEntityModel(playerVeh))
         local lowerVehicleModelName = vehicleModelName.lower(vehicleModelName)
@@ -343,16 +347,16 @@ function handleVehicleMechanicComplete(totalPrice)
     local mechanicVault = TriggerCallback("codem-mechanic:getMechanicVault")
     local playerAccount = TriggerCallback("codem-mechanic:getAccount")
     local currentBalance = mechanicVault
+    local shouldCheckJobConfig = true
 
-    local canCheckJobConfig = true
     if "no_job" ~= Config.MechanicMode then
         local nearestMechanic, _, _ = getNearestMechanic()
         if not CheckCanUseMechanic(nearestMechanic) then
-            canCheckJobConfig = false
+            shouldCheckJobConfig = false
         end
     end
 
-    if canCheckJobConfig then
+    if shouldCheckJobConfig then
         local jobConfig = Config.MechanicSettings[job]
         if not jobConfig then
             currentBalance = playerAccount.cash

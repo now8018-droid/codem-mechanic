@@ -57,29 +57,6 @@ function CheckCanUseMechanic(mechanic)
     return false
 end
 
-local function openMechanicMenuFromInteraction(mechanic)
-    if not nuiLoaded then
-        TriggerEvent('codem-mechanic:notification', Config.Locales.MENU_LOADING)
-        return
-    end
-
-    local selectedMechanic = mechanic
-    if not selectedMechanic then
-        local nearestMechanic = getNearestMechanic()
-        if nearestMechanic then
-            selectedMechanic = Config.MechanicSettings[nearestMechanic]
-        end
-    end
-
-    if not selectedMechanic then
-        selectedMechanic = Config.MechanicSettings[job]
-    end
-
-    if selectedMechanic then
-        openMenu('mechanic', selectedMechanic.label)
-    end
-end
-
 RegisterNetEvent("codem-mechanic:UpdateJobs")
 AddEventHandler("codem-mechanic:UpdateJobs", function(_jobs)
     jobs = _jobs
@@ -155,7 +132,11 @@ Config.OpenTrigger = function()
                                     SetVehicleFuelLevel(vehicle, 100.0)
                                 end
                                 if IsControlJustPressed(0, 38) then
-                                    openMechanicMenuFromInteraction(mechanic)
+                                    if nuiLoaded then
+                                        openMenu('mechanic', mechanic.label)
+                                    else
+                                        TriggerEvent('codem-mechanic:notification', Config.Locales.MENU_LOADING)
+                                    end
                                 end
                             end
                         end
@@ -245,7 +226,7 @@ Config.OpenTrigger = function()
                             label = mechanic.mechanicMenuLabel,
                             targeticon = 'fas fa-gears',
                             action = function()
-                                openMechanicMenuFromInteraction(mechanic)
+                                openMenu('mechanic', mechanic.label)
                             end
                         }
                     },
