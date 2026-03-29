@@ -143,8 +143,10 @@ CreateThread(function()
         UpdateJobs()
     end
     RegisterCallback('codem-mechanic:getAccount', function(source, cb)
-        local avatar = GetDiscordAvatar(source) or
-            Config.ExampleProfilePicture
+        local avatar = Config.ExampleProfilePicture
+        if type(GetDiscordAvatar) == "function" then
+            avatar = GetDiscordAvatar(source) or avatar
+        end
         local name = GetName(source)
         local data = {
             name = name,

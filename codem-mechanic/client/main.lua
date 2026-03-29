@@ -17,12 +17,15 @@ key = false
 lastMenuLabel = false
 
 function sendNuiMessage(action, payload)
-    while true do
-        if nuiLoaded then
-            break
+    if action ~= "CHECK_NUI" then
+        while true do
+            if nuiLoaded then
+                break
+            end
+            Wait(0)
         end
-        Wait(0)
     end
+
     SendNUIMessage({
         action = action,
         payload = payload
@@ -30,6 +33,7 @@ function sendNuiMessage(action, payload)
 end
 
 nuiCallbackNuiMessage = sendNuiMessage
+NuiMessage = sendNuiMessage
 
 nuiCallbackCreateThread = CreateThread
 
@@ -147,19 +151,22 @@ nuiCallbackAddEventHandler = AddEventHandler
 
 function openMechanicMenuHandler()
     local jobConfig = Config.MechanicSettings[job]
+    local shouldUseNearestMechanic = true
+
     if "no_job" ~= Config.MechanicMode then
         local nearestMechanic, _, _ = getNearestMechanic()
         if not CheckCanUseMechanic(nearestMechanic) then
-            goto lbl_22
+            shouldUseNearestMechanic = false
         end
     end
 
-    local nearestMechanic = getNearestMechanic()
-    if nearestMechanic then
-        jobConfig = Config.MechanicSettings[nearestMechanic]
+    if shouldUseNearestMechanic then
+        local nearestMechanic = getNearestMechanic()
+        if nearestMechanic then
+            jobConfig = Config.MechanicSettings[nearestMechanic]
+        end
     end
 
-    ::lbl_22::
     if jobConfig then
         openMenu("mechanic", jobConfig.label)
     end
@@ -344,20 +351,21 @@ function handleVehicleMechanicComplete(totalPrice)
     local mechanicVault = TriggerCallback("codem-mechanic:getMechanicVault")
     local playerAccount = TriggerCallback("codem-mechanic:getAccount")
     local currentBalance = mechanicVault
+    local shouldCheckJobConfig = true
 
     if "no_job" ~= Config.MechanicMode then
         local nearestMechanic, _, _ = getNearestMechanic()
         if not CheckCanUseMechanic(nearestMechanic) then
-            goto lbl_29
+            shouldCheckJobConfig = false
         end
     end
 
-    local jobConfig = Config.MechanicSettings[job]
-    if jobConfig then
-    else
-        currentBalance = playerAccount.cash
+    if shouldCheckJobConfig then
+        local jobConfig = Config.MechanicSettings[job]
+        if not jobConfig then
+            currentBalance = playerAccount.cash
+        end
     end
-    ::lbl_29::
 
     if Config.ModifyWithYourCash then
         local playerCash = TriggerCallback("codem-mechanic:getPlayerAccount")
