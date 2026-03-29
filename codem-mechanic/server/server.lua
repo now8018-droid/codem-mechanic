@@ -16,6 +16,44 @@ function RegisterCallback(name, cb)
     registeredCallbacks[name] = cb
 end
 
+function ExecuteSql(query, parameters)
+    local isBusy = true
+    local result = nil
+
+    if Config.SQL == "oxmysql" then
+        exports.oxmysql:execute(query, parameters or {}, function(data)
+            result = data
+            isBusy = false
+        end)
+    elseif Config.SQL == "ghmattimysql" then
+        exports.ghmattimysql:execute(query, parameters or {}, function(data)
+            result = data
+            isBusy = false
+        end)
+    elseif Config.SQL == "mysql-async" then
+        if parameters then
+            MySQL.Async.fetchAll(query, parameters, function(data)
+                result = data
+                isBusy = false
+            end)
+        else
+            MySQL.Async.fetchAll(query, {}, function(data)
+                result = data
+                isBusy = false
+            end)
+        end
+    else
+        isBusy = false
+        result = {}
+    end
+
+    while isBusy do
+        Wait(0)
+    end
+
+    return result
+end
+
 registerServerEvent("codem-mechanic:triggerServerCallback")
 AddEventHandler("codem-mechanic:triggerServerCallback", function(name, requestId, ...)
     local src = source
