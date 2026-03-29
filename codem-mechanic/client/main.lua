@@ -11,6 +11,11 @@ local nuiCallbackJobSuccesMoney
 local callbackRequestId = 0
 local pendingCallbacks = {}
 
+Core = nil
+job = ""
+job_grade_level = 0
+job_grade_name = ""
+
 openMenuDrawText = false
 nuiLoaded = false
 playerVeh = nil
@@ -49,6 +54,67 @@ function TriggerCallback(name, ...)
 
     return table.unpack(response)
 end
+
+local function waitPlayerLoaded()
+    while Core == nil do
+        Wait(0)
+    end
+
+    if Config.Framework == "esx" or Config.Framework == "oldesx" then
+        while Core.GetPlayerData() == nil or Core.GetPlayerData().job == nil do
+            Wait(100)
+        end
+    else
+        while Core.Functions.GetPlayerData() == nil or Core.Functions.GetPlayerData().job == nil do
+            Wait(100)
+        end
+    end
+end
+
+function SetPlayerJob()
+    waitPlayerLoaded()
+
+    if Config.Framework == "esx" or Config.Framework == "oldesx" then
+        local playerData = Core.GetPlayerData()
+        job = playerData.job.name
+        job_grade_level = playerData.job.grade
+        job_grade_name = playerData.job.grade_label
+    else
+        local playerData = Core.Functions.GetPlayerData()
+        job = playerData.job.name
+        job_grade_level = playerData.job.grade.level
+        job_grade_name = playerData.job.grade.name
+    end
+end
+
+CreateThread(function()
+    Core, Config.Framework = GetCore()
+    SetPlayerJob()
+end)
+
+RegisterNetEvent("esx:playerLoaded")
+AddEventHandler("esx:playerLoaded", function()
+    Wait(500)
+    SetPlayerJob()
+end)
+
+RegisterNetEvent("QBCore:Client:OnPlayerLoaded")
+AddEventHandler("QBCore:Client:OnPlayerLoaded", function()
+    Wait(500)
+    SetPlayerJob()
+end)
+
+RegisterNetEvent("esx:setJob")
+AddEventHandler("esx:setJob", function()
+    Wait(250)
+    SetPlayerJob()
+end)
+
+RegisterNetEvent("QBCore:Client:OnJobUpdate")
+AddEventHandler("QBCore:Client:OnJobUpdate", function()
+    Wait(250)
+    SetPlayerJob()
+end)
 
 function sendNuiMessage(action, payload)
     while true do

@@ -1,11 +1,16 @@
 local moduleData = {}
 moduleData.Avatars = {}
 local registeredCallbacks = {}
+Core = nil
 
 offSetData = {}
 
 local registerServerEvent = RegisterServerEvent
 local triggerClientEvent = TriggerClientEvent
+
+CreateThread(function()
+    Core, Config.Framework = GetCore()
+end)
 
 function RegisterCallback(name, cb)
     registeredCallbacks[name] = cb
@@ -24,6 +29,133 @@ AddEventHandler("codem-mechanic:triggerServerCallback", function(name, requestId
         triggerClientEvent("codem-mechanic:serverCallback", src, requestId, ...)
     end, ...)
 end)
+
+function GetPlayer(source)
+    while Core == nil do
+        Wait(0)
+    end
+
+    if Config.Framework == "esx" or Config.Framework == "oldesx" then
+        return Core.GetPlayerFromId(source)
+    end
+
+    return Core.Functions.GetPlayer(source)
+end
+
+function GetIdentifier(source)
+    local player = GetPlayer(source)
+    if not player then
+        return nil
+    end
+
+    if Config.Framework == "esx" or Config.Framework == "oldesx" then
+        return player.getIdentifier()
+    end
+
+    return player.PlayerData.citizenid
+end
+
+function GetJob(source)
+    local player = GetPlayer(source)
+    if not player then
+        return false
+    end
+
+    if Config.Framework == "esx" or Config.Framework == "oldesx" then
+        local playerJob = player.getJob()
+        return playerJob.name, playerJob.grade
+    end
+
+    return player.PlayerData.job.name, player.PlayerData.job.grade.level
+end
+
+function GetName(source)
+    if Config.Framework == "esx" or Config.Framework == "oldesx" then
+        local player = GetPlayer(source)
+        if not player then
+            return "Unknown"
+        end
+        return (player.getName and player.getName()) or player.getIdentifier() or "Unknown"
+    end
+
+    local player = GetPlayer(source)
+    if player and player.PlayerData and player.PlayerData.charinfo then
+        return (player.PlayerData.charinfo.firstname or "") .. " " .. (player.PlayerData.charinfo.lastname or "")
+    end
+
+    return GetPlayerName(source) or "Unknown"
+end
+
+function AddMoney(source, amount)
+    local player = GetPlayer(source)
+    if not player then
+        return false
+    end
+
+    if Config.Framework == "esx" or Config.Framework == "oldesx" then
+        player.addMoney(amount)
+        return true
+    end
+
+    player.Functions.AddMoney("cash", amount)
+    return true
+end
+
+function RemoveMoney(source, amount)
+    local player = GetPlayer(source)
+    if not player then
+        return false
+    end
+
+    if Config.Framework == "esx" or Config.Framework == "oldesx" then
+        if player.getMoney() < amount then
+            return false
+        end
+        player.removeMoney(amount)
+        return true
+    end
+
+    if player.Functions.GetMoney("cash") < amount then
+        return false
+    end
+    player.Functions.RemoveMoney("cash", amount)
+    return true
+end
+
+function RemoveMoneyBank(source, amount)
+    local player = GetPlayer(source)
+    if not player then
+        return false
+    end
+
+    if Config.Framework == "esx" or Config.Framework == "oldesx" then
+        local bank = player.getAccount("bank").money
+        if bank < amount then
+            return false
+        end
+        player.removeAccountMoney("bank", amount)
+        return true
+    end
+
+    if player.Functions.GetMoney("bank") < amount then
+        return false
+    end
+    player.Functions.RemoveMoney("bank", amount)
+    return true
+end
+
+function GetPlayerInventory(source)
+    local player = GetPlayer(source)
+    if not player then
+        return {}
+    end
+
+    if Config.Framework == "esx" or Config.Framework == "oldesx" then
+        return player.inventory or {}
+    end
+
+    return (player.PlayerData and player.PlayerData.items) or {}
+end
 
 local function handleShowOtherBill(billData)
     local targetPlayerId = tonumber(billData.plyid)
