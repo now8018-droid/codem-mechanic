@@ -375,10 +375,14 @@ function AddEmployee(id, job)
             return
         end
 
+        local avatar = "https://cdn.discordapp.com/attachments/983471660684423240/1147567519712940044/example-pp.png"
+        if type(GetDiscordAvatar) == "function" then
+            avatar = GetDiscordAvatar(id) or avatar
+        end
+
         local data = {
             name = GetName(id),
-            pp = GetDiscordAvatar(id) or
-                "https://cdn.discordapp.com/attachments/983471660684423240/1147567519712940044/example-pp.png",
+            pp = avatar,
             bills = 0,
             profit = 0,
             online = true,
