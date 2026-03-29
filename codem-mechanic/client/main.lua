@@ -17,12 +17,15 @@ key = false
 lastMenuLabel = false
 
 function sendNuiMessage(action, payload)
-    while true do
-        if nuiLoaded then
-            break
+    if action ~= "CHECK_NUI" then
+        while true do
+            if nuiLoaded then
+                break
+            end
+            Wait(0)
         end
-        Wait(0)
     end
+
     SendNUIMessage({
         action = action,
         payload = payload
