@@ -119,19 +119,13 @@ nuiCallbackAddEventHandler = AddEventHandler
 
 function openMechanicMenuHandler()
     local jobConfig = Config.MechanicSettings[job]
-    if "no_job" ~= Config.MechanicMode then
-        local nearestMechanic, _, _ = getNearestMechanic()
-        if not CheckCanUseMechanic(nearestMechanic) then
-            goto lbl_22
+    if "no_job" == Config.MechanicMode or CheckCanUseMechanic(getNearestMechanic()) then
+        local nearestMechanic = getNearestMechanic()
+        if nearestMechanic then
+            jobConfig = Config.MechanicSettings[nearestMechanic]
         end
     end
 
-    local nearestMechanic = getNearestMechanic()
-    if nearestMechanic then
-        jobConfig = Config.MechanicSettings[nearestMechanic]
-    end
-
-    ::lbl_22::
     if jobConfig then
         openMenu("mechanic", jobConfig.label)
     end
