@@ -151,6 +151,11 @@ function openMechanicMenuHandler()
 
     if nearestMechanic and (Config.MechanicMode == "no_job" or CheckCanUseMechanic(nearestMechanic)) then
         jobConfig = Config.MechanicSettings[nearestMechanic]
+    elseif Config.MechanicMode == "no_job" and not jobConfig then
+        for _, mechanicConfig in pairs(Config.MechanicSettings) do
+            jobConfig = mechanicConfig
+            break
+        end
     end
 
     if jobConfig then
