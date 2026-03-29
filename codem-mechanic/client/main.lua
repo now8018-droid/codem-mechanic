@@ -87,16 +87,6 @@ function mainThreadFunction()
     if "no_job" == Config.MechanicMode then
         if "ox-target" == Config.InteractionHandler then
             for mechanicName, mechanicData in pairs(Config.MechanicSettings) do
-                for _, coords in pairs(mechanicData.bossMenuCoords) do
-                    TriggerEvent("codem-mechanic:AddZone", coords, "mechanic-boss", {
-                        {
-                            name = "mechanic-boss",
-                            event = "codem-mechanic:OpenBossMenu",
-                            icon = "fa-solid fa-bars-progress",
-                            label = Config.Locales.OPEN_BOSS_MENU
-                        }
-                    })
-                end
                 for _, coords in pairs(mechanicData.mechanicMenuCoords) do
                     TriggerEvent("codem-mechanic:AddZone", coords, "mechanic-tuning-menu", {
                         {
@@ -111,9 +101,6 @@ function mainThreadFunction()
         end
         if "qb-target" == Config.InteractionHandler then
             for mechanicName, mechanicData in pairs(Config.MechanicSettings) do
-                for _, coords in pairs(mechanicData.bossMenuCoords) do
-                    TriggerEvent("codem-mechanic:AddZone", coords, mechanicData)
-                end
                 for _, coords in pairs(mechanicData.mechanicMenuCoords) do
                     TriggerEvent("codem-mechanic:AddZoneMechanic", coords, mechanicData)
                 end
@@ -123,21 +110,6 @@ function mainThreadFunction()
 end
 
 nuiCallbackCreateThread(mainThreadFunction)
-
-nuiCallbackRegisterNUICallback = RegisterNetEvent
-local NET_EVENT_OPEN_BOSS_MENU = "codem-mechanic:OpenBossMenu"
-nuiCallbackRegisterNUICallback(NET_EVENT_OPEN_BOSS_MENU)
-
-nuiCallbackAddEventHandler = AddEventHandler
-
-function openBossMenuHandler()
-    local jobConfig = Config.MechanicSettings[job]
-    if jobConfig then
-        openMenu("boss", jobConfig.label)
-    end
-end
-
-nuiCallbackAddEventHandler(NET_EVENT_OPEN_BOSS_MENU, openBossMenuHandler)
 
 nuiCallbackRegisterNUICallback = RegisterNetEvent
 local NET_EVENT_OPEN_MECHANIC_MENU = "codem-mechanic:OpenMechanicMenu"
@@ -288,23 +260,6 @@ function openMenu(menuType, menuLabel)
         hideMenuOpen()
         TriggerServerEvent("codem-mechanic:server:StartModity", NetworkGetNetworkIdFromEntity(playerVeh), oldDataVehicle)
 
-    elseif "boss" == menuType then
-        if CheckPermission("accessBossMenu") then
-            local playerAccount = TriggerCallback("codem-mechanic:getAccount")
-            SetNuiFocus(true, true)
-            sendNuiMessage("openmenu", {
-                menu = menuType,
-                profileAccount = playerAccount,
-                mechanicLabel = menuLabel
-            })
-            sendNuiMessage("SET_ITEM_IMAGES_FOLDER", Config.ItemImagesFolder)
-            bossMenuOpen = true
-            local inventory = TriggerCallback("codem-mechanic:GetPlayerInventory")
-            sendNuiMessage("SetInventory", inventory)
-            SetMyRank()
-            TriggerEvent("codem-mechanic:RefreshBossMoney")
-            hideMenuOpen()
-        end
     elseif "jobmenu" == menuType then
         SetNuiFocus(true, true)
         sendNuiMessage("openmenu", {
@@ -1630,7 +1585,6 @@ local NUI_EVENT_CLOSE = "close"
 
 function handleClose()
     openMenuDrawText = false
-    bossMenuOpen = false
     SetNuiFocus(false, false)
     RenderScriptCams(false, true, 500, true, true)
     DestroyCam(mainCam, true)

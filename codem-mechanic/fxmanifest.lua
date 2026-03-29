@@ -9,13 +9,13 @@ shared_scripts {
 }
 
 client_scripts {
-	'client/*.lua',
+	'client/main.lua',
+	'client/camera.lua',
 	'editable/client_editable.lua',
 }
 server_scripts {
 	-- '@mysql-async/lib/MySQL.lua', --:warning:PLEASE READ:warning:; Uncomment this line if you use 'mysql-async'.:warning:
 	'@oxmysql/lib/MySQL.lua', --:warning:PLEASE READ:warning:; Uncomment this line if you use 'oxmysql'.:warning:
-	'server/bossmenu.lua',
 	'editable/server_config.lua',
 	'server/server.lua',
 	'editable/server_editable.lua',
@@ -40,9 +40,7 @@ files {
 }
 
 escrow_ignore {
-	'server/bossmenu.lua',
 	'editable/*.lua',
-	'client/bossmenu.lua',
 	'config/*.lua',
 	'client/camera.lua'
 }

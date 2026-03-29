@@ -106,7 +106,6 @@ Config.Locales = {
     ["REPAIR_VEHICLE"] = "Repair the vehicle",
     ["FLIP_VEHICLE"] = "Flip the vehicle",
     ["GET_NPC_MISSION"] = "Get NPC Mission",
-    ["OPEN_BOSS_MENU"] = "Open Boss Menu",
     ["OPEN_MECHANIC_MENU"] = "Open Mechanic Menu",
     ["MENU_LOADING"] = "Menu is loading please wait.",
     ["PROGRESS_BAR_REPAIR_VEHICLE"] = "Repairing vehicle...",
